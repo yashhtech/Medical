@@ -1,0 +1,258 @@
+/* =========================
+   HERO STRIP
+========================= */
+.booking-hero {
+    height: 220px;
+    background:
+        linear-gradient(rgba(0,180,120,.8), rgba(0,180,120,.8)),
+        url("../images/mc1.jpg") center/cover;
+    display: flex;
+    align-items: center;
+    padding-left: 10%;
+}
+
+.booking-hero h1 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 300;
+  
+}
+
+/* =========================
+   GRID LAYOUT
+========================= */
+.booking-container {
+    max-width: 1200px;
+    margin: 80px auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+/* =========================
+   SERVICE CARD
+========================= */
+.service-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    position: relative;
+}
+
+/* Card hover lift */
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   IMAGE EFFECTS
+========================= */
+.service-card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+/* Image zoom on hover */
+.service-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Green overlay */
+.service-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(29, 179, 107, 0.15);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.service-content {
+    padding: 25px;
+    position: relative;
+    z-index: 2;
+    display: flex;                 /* 🔴 add */
+    flex-direction: column; 
+}
+
+.service-content p,
+.service-content .price {
+    margin-right: auto;            /* push button to right */
+}
+
+.service-content h3 {
+    color: #1db36b;
+    font-weight: bold;
+    margin-bottom: 14px;
+    transition: color 0.3s ease;
+}
+
+/* Title color shift */
+.service-card:hover h3 {
+    color: #16965b;
+}
+
+.service-content p {
+    margin: 6px 0;
+    color: #555;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.price {
+    font-size: 18px;
+    margin-bottom: 22px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* =========================
+   BOOK BUTTON
+========================= */
+.book-btns {
+    display: inline-block; 
+    padding: 12px 30px;
+    background: #9b59b6;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: all 0.35s ease;
+    border-radius: 2px;
+    margin-left: auto;             /* 🔴 moves button to right */
+    margin-top: 15px;
+    
+}
+
+/* Button hover glow */
+.book-btns:hover {
+    background: #7f3fa1;
+    box-shadow: 0 10px 25px rgba(155, 89, 182, 0.4);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 992px) {
+    .booking-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .booking-container {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-hero h1 {
+        font-size: 32px;
+    }
+}
+
+/* =================================
+   LARGE TABLET (<= 1024px)
+================================= */
+@media (max-width: 1024px) {
+    .booking-container {
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .booking-hero {
+        padding-left: 6%;
+    }
+
+    .booking-hero h1 {
+        font-size: 38px;
+    }
+}
+
+/* =================================
+   TABLET (<= 992px)
+================================= */
+@media (max-width: 992px) {
+    .booking-container {
+        grid-template-columns: repeat(2, 1fr);
+        margin: 60px auto;
+    }
+
+    .service-card img {
+        height: 210px;
+    }
+}
+
+/* =================================
+   MOBILE (<= 768px)
+================================= */
+@media (max-width: 768px) {
+    .booking-hero {
+        height: auto;
+        padding: 60px 20px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .booking-hero h1 {
+        font-size: 30px;
+        line-height: 1.3;
+    }
+
+    .booking-container {
+        grid-template-columns: 1fr;
+        margin: 50px auto;
+        gap: 25px;
+    }
+
+    .service-card img {
+        height: 200px;
+    }
+
+    .service-content {
+        padding: 20px;
+    }
+
+    .book-btns {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+    }
+}
+
+/* =================================
+   SMALL MOBILE (<= 480px)
+================================= */
+@media (max-width: 480px) {
+    .booking-hero h1 {
+        font-size: 26px;
+    }
+
+    .service-content h3 {
+        font-size: 18px;
+    }
+
+    .service-content p {
+        font-size: 14px;
+    }
+
+    .price {
+        font-size: 16px;
+    }
+
+    .book-btns {
+        font-size: 14px;
+        padding: 11px 20px;
+    }
+}

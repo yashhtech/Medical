@@ -1,0 +1,255 @@
+/* =============================
+   HERO STRIP (GREEN BAND)
+============================= */
+.dept-hero {
+    background: linear-gradient(
+        rgba(120, 200, 160, 0.95),
+        rgba(120, 200, 160, 0.95)
+    ),
+   url("../images/neuro.jpg") center/cover no-repeat;
+}
+
+.dept-hero-inner {
+    max-width: 1200px;
+    margin: auto;
+    padding: 90px 20px;
+}
+
+.dept-hero h1 {
+    color: #ffffff;
+    font-size: 44px;
+    font-weight: 300;
+}
+
+/* =============================
+   MAIN SECTION
+============================= */
+.dept-section {
+    background: #ffffff;
+    padding: 90px 0;
+}
+
+/* EXACT WIX WIDTH */
+.dept-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    gap: 70px;
+    align-items: center;
+}
+
+/* IMAGE */
+.dept-image img {
+    width: 520px;
+    max-width: 100%;
+}
+
+/* TEXT */
+.dept-text {
+    flex: 1;
+}
+
+.dept-text h2 {
+    color: #1bb978;
+    font-size: 36px;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+.dept-text p {
+    color: #8c8c8c;
+    font-size: 15px;
+    line-height: 1.9;
+    margin-bottom: 18px;
+}
+
+/* =============================
+   BUTTON + TEXT (CRITICAL)
+============================= */
+.dept-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+/* EXACT BUTTON STYLE */
+.btn-appointment {
+    background: #8e44ad;
+    color: #ffffff;
+    padding: 14px 26px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-appointment:hover {
+    background: #732d91;
+}
+
+.schedule-text {
+    color: #6f6f6f;
+    font-size: 14px;
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
+@media (max-width: 992px) {
+    .dept-container {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .dept-image img {
+        width: 100%;
+    }
+}
+
+
+
+/* =================================================
+   GLOBAL RESPONSIVE SAFETY
+================================================= */
+.dept-hero img,
+.dept-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =================================================
+   LARGE DESKTOP (1200px+)
+================================================= */
+@media (min-width: 1200px) {
+    .dept-hero h1 {
+        font-size: 44px;
+    }
+
+    .dept-text h2 {
+        font-size: 36px;
+    }
+}
+
+/* =================================================
+   DESKTOP / LAPTOP
+================================================= */
+@media (max-width: 1199px) {
+    .dept-container {
+        padding: 0 20px;
+        gap: 50px;
+    }
+
+    .dept-hero-inner {
+        padding: 80px 20px;
+    }
+}
+
+/* =================================================
+   TABLET (LANDSCAPE + PORTRAIT)
+================================================= */
+@media (max-width: 992px) {
+    .dept-hero-inner {
+        padding: 70px 20px;
+    }
+
+    .dept-hero h1 {
+        font-size: 36px;
+    }
+
+    .dept-section {
+        padding: 70px 0;
+    }
+
+    .dept-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .dept-text h2 {
+        font-size: 30px;
+    }
+
+    .dept-text p {
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .dept-actions {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+}
+
+/* =================================================
+   MOBILE (TABLET-SMALL / LARGE PHONE)
+================================================= */
+@media (max-width: 768px) {
+    .dept-hero-inner {
+        padding: 60px 16px;
+        text-align: center;
+    }
+
+    .dept-hero h1 {
+        font-size: 30px;
+        line-height: 1.3;
+    }
+
+    .dept-section {
+        padding: 60px 0;
+    }
+
+    .dept-text {
+        text-align: left;
+    }
+
+    .dept-text h2 {
+        font-size: 26px;
+    }
+
+    .dept-text p {
+        font-size: 14px;
+    }
+
+    .dept-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .btn-appointment {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* =================================================
+   SMALL MOBILE
+================================================= */
+@media (max-width: 480px) {
+    .dept-hero-inner {
+        padding: 50px 14px;
+    }
+
+    .dept-hero h1 {
+        font-size: 24px;
+    }
+
+    .dept-text h2 {
+        font-size: 22px;
+    }
+
+    .dept-text p {
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .btn-appointment {
+        padding: 12px 18px;
+        font-size: 13px;
+    }
+
+    .schedule-text {
+        font-size: 13px;
+    }
+}

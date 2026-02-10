@@ -1,0 +1,580 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/patient_dashboard.css' %}">
+</head>
+<body>
+
+<header class="patient-navbar">
+    <div class="nav-left">
+        <div class="nav-logo">
+            <span class="pulse">~</span>
+            <span class="medical">Medical</span>
+            <span class="clinic">Clinic</span>
+        </div>
+        <div class="nav-subtitle">Exams & Diagnostics</div>
+    </div>
+    <div class="nav-center">
+    <a href="{% url 'patient_dashboard' %}?page=book">📅 Book Appointments</a>
+    <a href="{% url 'patient_dashboard' %}?page=appointments">📅⏳ Appointments</a>    
+     <div class="nav-dropdown">
+        <a href="#" class="dropdown-btn">🩺 Specialization ▾</a>
+
+        <div class="dropdown-menu">
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Cardiologist">❤️ Cardiologist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dermatologist">🧴 Dermatologist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Orthopaedics">🦴 Orthopaedics</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Pediatrician">👶 Pediatrician</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Opthalmologist">👁️ Opthalmologist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dentist">🦷 Dentist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Nephrologist">🧬 Nephrologist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Surgeon">🔪 Surgeon</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Oncologist">🎗️ Oncologist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Psychiatrist">🧠 Psychiatrist</a>
+    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Gynaecologist">🤰 Gynaecologist</a>
+</div>
+
+    </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="{% url 'logout_patient' %}" class="logout-btn">🚪 Logout</a>
+    </div>
+</header>
+
+<div class="patient-wrapper">
+
+    <!-- LEFT PROFILE BAR -->
+    <aside class="profile-bar">
+        <div class="profile-header">
+    <div class="profile-img-wrapper">
+     {% if patient.image %}
+    <img src="{{ patient.image.url }}" class="profile-img">
+    {% else %}
+     <img src="{% static 'images/default-user.png' %}" class="profile-img">
+     {% endif %}
+    </div>
+
+    <h3 class="patient-name">{{ patient.name }}</h3>
+
+    <div class="patient-meta">
+        <span>🎂 {{ patient.age }} yrs</span>
+        <span>⚧ {{ patient.gender }}</span>
+    </div>
+
+    {% comment %} <div class="patient-contact">
+        📞 {{ patient.contact }}
+     </div> {% endcomment %}
+    </div>
+        <a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a>
+        <a href="{% url 'notifications' %}">🔔 Notifications</a>
+        <a href="{% url 'medical_reports' %}">📄 Medical Reports</a>
+        <a href="/patient_dashboard/?page=p_queries">💬  Prescription Queries</a>
+        <a href="{% url 'video_call' %}">🎥 Video Call</a>
+        <a href="{% url 'medical_progress' %}">📊 Health Progress</a>
+        <a href="{% url 'medical_health' %}">🥗 Medical Health</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="patient-content">
+
+        {% if messages %}
+        <div class="patient-messages" id="flash-messages">
+            {% for message in messages %}
+                <div class="msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
+        {% if section == 'dashboard' %}
+         <div class="content-card">
+        <h2>Welcome {{ patient.name }} 👋</h2>  <br>
+        <p>We Hope You Are In Good Health & Happyness</p>
+        </div>
+
+        {% elif section == 'book' %}
+        <div class="content-card">
+         <h2>Book Appointment</h2>
+
+<!-- SEARCH BAR -->
+        <form method="get" class="doctor-search" action="{% url 'patient_dashboard' %}">
+          <input type="hidden" name="page" value="book">
+     <input
+        type="text"
+        name="q"
+        placeholder="Search doctor by name / specialization..."
+        value="{{ query|default:'' }}" >
+    <button type="submit">🔍 Search</button>
+        </form>
+
+<!-- DOCTOR LIST -->
+      <div class="doctor-grid">
+     {% for d in doctors %}
+     <div class="doctor-card">
+
+        <div class="doctor-img">
+            {% if d.image %}
+                <img src="{{ d.image.url }}">
+            {% else %}
+                <img src="{% static 'images/default-user.png' %}">
+            {% endif %}
+        </div>
+
+        <h3>{{ d.name }}</h3>
+        <p class="spec">Doctor of {{ d.specialization }}</p>
+        <p class="exp">🧠 {{ d.experience }} Years Experience</p>
+         <p class="tagline">
+            {% if d.specialization == "Cardiologist" %}
+                ❤️ Doctor of Heart
+            {% elif d.specialization == "Dermatologist" %}
+                🧴 Skin Specialist
+            {% elif d.specialization == "Orthopaedics" %}
+                🦴 Bone & Joint Expert
+            {% elif d.specialization == "Pediatrician" %}
+                🧒 Doctor of Child
+            {% elif d.specialization == "Opthalmologist" %}
+                👀 Eyes Specialist
+            {% elif d.specialization == "Dentist" %}
+                🦷 Teeth & Dental Expert
+            {% elif d.specialization == "Nephrologist" %}
+                👩‍⚕️ Kidney Specialist
+            {% elif d.specialization == "Surgeon" %}
+                💉 Doctor of Surgery
+            {% elif d.specialization == "Oncologist" %}
+                👩‍⚕️ Doctor Of Cancer
+            {% elif d.specialization == "Psychiatrist" %}
+                🧠 Doctor of Mind
+            {% elif d.specialization == "Hepatologist" %}
+                🏥 Liver Specialist
+            {% elif d.specialization == "Gynaecologist" %}
+                👩🏻 Doctor of Women
+            {% elif d.specialization == "Gastroenterologists" %}
+                👨🏻‍⚕️ Doctor of Stomach
+            {% elif d.specialization == "Otolaryngologist" %}
+                👂 Ear Specialist
+            {% elif d.specialization == "Pulononologist" %}
+               🫁  Doctor of Lungs
+            {% else %}
+                🩺 Medical Specialist
+            {% endif %}  </p>
+        <p class="about">
+            {{ d.bio|truncatewords:18 }}
+        </p>
+
+        <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}"
+         class="book-btn">
+         📅 Book Now
+           </a>
+
+
+
+    </div>
+     {% empty %}
+        <p>No doctors found.</p>
+     {% endfor %}
+     </div>
+     </div>
+               
+<!--=====================>>>SPECIALIZATION<<<<================ -->
+            {% elif section == 'specialization' %}
+
+             <div class="content-card">
+              <h2>
+             🩺 {{ selected_specialization }} Doctors Available
+             </h2>
+
+             <div class="doctor-grid">
+             {% for d in doctors %}
+             <div class="doctor-card">
+
+             <div class="doctor-img">
+                {% if d.image %}
+                    <img src="{{ d.image.url }}">
+                {% else %}
+                    <img src="{% static 'images/default-user.png' %}">
+                {% endif %}
+              </div>
+
+              <h3>{{ d.name }}</h3>
+              <p class="spec">Doctor of {{ d.specialization }}</p>
+             <p class="exp">🧠 {{ d.experience }} Years Experience</p>
+
+             <p class="about">
+                {{ d.bio|truncatewords:18 }}
+             </p>
+
+             <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}"
+               class="book-btn">
+             📅 Book Now
+              </a>
+
+
+             </div>
+               {% empty %}
+              <p>No doctors available for this specialization.</p>
+             {% endfor %}
+              </div>
+             </div>
+
+
+
+
+
+        {% elif section == 'appointments' %}
+         <div class="appointments-wrapper">
+        <h2 class="appt-heading">Upcoming Appointments</h2>
+
+        {% for appt in upcoming_appointments %}
+          <div class="appt-card">
+         <img src="{{ appt.doctor.image.url }}" class="doctor-img">
+
+         <div class="appt-info">
+           <h3>{{ appt.doctor.name }}</h3>
+           <p>{{ appt.doctor.specialization }}</p>
+           <p class="appt-time">
+            {{ appt.date }} | {{ appt.time }}
+          </p>
+          <span class="status confirmed">Confirmed</span>
+         </div>
+
+        <div class="appt-actions">
+          <a href="?page=schedule&doctor_id={{ appt.doctor.id }}" class="reschedule-btn">
+            Reschedule
+           </a>
+
+          <a href="{% url 'cancel_appointment' appt.id %}" class="cancel-btn">
+             Cancel
+            </a>
+         </div>
+         </div>
+         {% empty %}
+         <p style="color: aliceblue; font-weight: bold;">No upcoming appointments</p>
+         {% endfor %}
+
+
+         <h2 class="appt-heading">Past Appointments</h2>
+
+         {% for appt in past_appointments %}
+         <div class="appt-card past">
+         <img src="{{ appt.doctor.image.url }}" class="doctor-img">
+
+         <div class="appt-info">
+         <h3>{{ appt.doctor.name }}</h3>
+         <p>{{ appt.doctor.specialization }}</p>
+         <p class="appt-time">
+            {{ appt.date }} | {{ appt.time }}
+         </p>
+         <span class="status cancelled">
+         {{ appt.status }}
+         </span>
+         </div>
+         </div>
+         {% empty %}
+         <p style="color: aliceblue; font-weight: bold;">No past appointments</p>
+         {% endfor %}
+         </div>
+
+        {% elif section == 'reports' %}
+        <div class="content-card">
+        <h2>Medical Reports</h2>
+        <p>Lab reports & prescriptions.</p>
+        </div>
+
+        {% elif section == 'p_queries' %}
+       
+      <div class="query-grid">
+
+      {% for appt in appointments %}
+     <div class="doctor-card">
+    <img src="{{ appt.doctor.image.url|default:'/static/images/default-user.png' }}">
+
+    <h3>Dr. {{ appt.doctor.name }}</h3>
+    <p>{{ appt.doctor.specialization }}</p>
+    <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
+
+    <a href="{% url 'patient_dashboard' %}?page=chat&appointment_id={{ appt.id }}"
+       class="chat-btn">
+       💬 Message
+    </a>
+</div>
+{% endfor %}
+
+</div>
+
+
+{% elif section == "chat" and appointment %}
+<div class="chat-wrapper">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+        <img src="{{ doctor.image.url }}" alt="Doctor Image">
+        <div class="chat-header-info">
+            <h3>Dr. {{ doctor.name }}</h3>
+            <small>{{ doctor.specialization }}</small>
+        </div>
+    </div>
+
+    <!-- CHAT BODY -->
+    <div class="chat-box">
+        {% for msg in messages %}
+        <div class="msg {{ msg.sender }}">
+            <p>{{ msg.message }}</p>
+            <span>{{ msg.created_at|time:"H:i" }}</span>
+        </div>
+        {% empty %}
+        <p class="no-msg">No messages yet. Say hello!</p>
+        {% endfor %}
+    </div>
+
+    <!-- INPUT FORM -->
+    <form method="POST" class="chat-input">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+
+
+
+
+
+        {% elif section == 'video' %}
+        <div class="content-card">
+        <h2>Live Video Call</h2>
+        <p>Start video consultation.</p>
+        </div>
+
+        {% elif section == 'notifications' %}
+        <div class="content-card">
+        <h2>Notifications</h2>
+        <p>Appointment alerts & reminders.</p>
+        </div>
+
+        {% elif section == 'progress' %}
+        <div class="content-card">
+        <h2>Medical Progress</h2>
+        <p>Analytics of your health improvement.</p>
+        </div>
+
+        {% elif section == 'health' %}
+        <div class="content-card">
+        <h2>Medical Health</h2>
+        <ul>
+            <li>🥗 Healthy Diet Plans</li>
+            <li>🏃 Daily Exercise Routines</li>
+            <li>🛌 Sleep Recommendations</li>
+        </ul>
+        </div>
+
+
+{% elif section == "schedule" %}
+
+<div class="schedule-page-wrapper">
+
+    <a href="{% url 'patient_dashboard' %}?page=book" class="back-link" style="color: red; font-weight: bolder;">← Back</a>
+         <h1 class="page-title" style="color: aliceblue; font-weight: bolder;">Schedule your service</h1>
+         <p class="page-subtitle" style="color: aliceblue; font-weight: bolder;">Check out our availability and book the date and time that works for you</p>
+
+           <div class="schedule-card">
+
+    <!-- LEFT : CALENDAR -->
+          <div class="calendar-box">
+           <h3>Select a Date and Time</h3>
+
+            <div class="month-header">
+              <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:-1 }}&year={{ year }}">‹</a>
+               <strong>{{ month_name }}/{{ year }}</strong>
+                <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:1 }}&year={{ year }}">›</a>
+              </div>
+
+              <div class="weekdays">
+               <span>Sun</span><span>Mon</span><span>Tue</span>
+                 <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+               </div>
+
+           <div class="calendar-grid">
+{% for week in month_days %}
+    {% for day in week %}
+        {% if day == 0 %}
+            <span class="empty"></span>
+        {% else %}
+            {# Build YYYY-MM-DD string for this day #}
+            {% with year|stringformat:"s" as y %}
+            {% with month|stringformat:"02d" as m %}
+            {% with day|stringformat:"02d" as d %}
+                {% with y|add:"-"|add:m|add:"-"|add:d as day_str %}
+                    <a href="?page=schedule&doctor_id={{ doctor.id }}&date={{ day_str }}"
+                       class="day-btn {% if selected_date == day_str %}selected{% endif %}">
+                        {{ day }}
+                    </a>
+                {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+</div>
+
+
+        </div>
+
+              <!-- MIDDLE : TIME SLOTS -->
+              <div class="slot-box">
+                  <h3>Availability</h3>
+
+                 <form method="post">
+                 {% csrf_token %}
+                 <input type="hidden" name="date" value="{{ selected_date }}">
+
+                    <div class="slots">
+                   {% for slot in time_slots %}
+                  <label class="slot">
+                         <input type="radio" name="time" value="{{ slot }}">
+                         {% if slot == selected_time %}checked{% endif %}>
+                      <span>{{ slot }}</span>
+                    </label>
+                    {% endfor %}
+                   </div>
+
+                  <button class="next-btn" type="submit">Next</button>
+
+                  </form>
+                  </div>
+
+              <!-- RIGHT : SERVICE DETAILS -->
+              <div class="service-box">
+              <h3>Service Details</h3>
+              <p><strong>Doctor:</strong> {{ doctor.name }}</p>
+               <p class="service">{{ doctor.specialization }}</p>
+                <p><strong>Date:</strong> {{ selected_date|default:"Not selected" }} 
+                <strong>Time:</strong> {{ selected_time|default:"Not selected" }}</p>
+              <p><strong>Medical Clinic</strong></p>
+             <p><strong>Duration:</strong> 1 Hour</p>
+             <p><strong>Booking Charge:</strong> ₹ 300.00</p>
+
+                {% if selected_date and selected_time %}
+                <a href="{% url 'patient_dashboard' %}?page=booking&doctor_id={{ doctor.id }}&date={{ selected_date }}&time={{ selected_time }}"class="confirm-btn">
+                Confirm Appointment</a>
+                {% else %}
+                <button class="confirm-btn disabled" disabled>
+                Select date & time first
+                </button>
+                {% endif %}
+
+
+
+               </div>
+
+               </div>
+             </div>
+
+            {% elif section == "booking" %}
+
+<div class="booking-wrapper">
+
+    <!-- BACK BUTTON -->
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+
+    <h1 class="booking-title">Booking Form</h1>
+
+    <div class="booking-layout">
+
+        <!-- LEFT : CLIENT DETAILS -->
+        <div class="client-box">
+            <h3>Client Details</h3>
+
+            <p class="login-text">Input Your Details..!!</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <input type="text" name="first_name" placeholder="First name *">
+                    <input type="text" name="last_name" placeholder="Last name *">
+                </div>
+
+                <div class="row">
+                    <input type="email" name="email" placeholder="Email *">
+                    <input type="text" name="phone" placeholder="Phone">
+                </div>
+                <div class="row">
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+                        <input type="hidden" name="time" value="{{ selected_time }}">
+                        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                </div>
+
+                <textarea placeholder="Add your message" name="text"></textarea>
+                 
+        </div>
+
+        <!-- RIGHT : BOOKING DETAILS -->
+        <div class="booking-details-box">
+            <h3>Booking Details</h3>
+
+            <p class="service-name">
+                Consult with {{ doctor.name }}
+            </p>
+
+            <p class="datetime">
+                {{ selected_date }} at {{ selected_time }}
+            </p>
+
+            <p class="specialization">
+                {{ doctor.specialization }}
+            </p>
+
+            <p><strong>Duration:</strong> 1 Hour</p>
+
+            <hr class="purple-line">
+
+            <h4>Payment Details</h4>
+
+            <div class="payment-row">
+                <span>Payment for consult with {{ doctor.name }}</span>
+                <span>₹300</span>
+            </div>
+
+            <div class="payment-row total">
+                <strong>Total</strong>
+                <strong>₹300</strong>
+            </div>
+
+            <p class="notify-text">
+                By completing your booking, you agree to receive
+                appointment notifications via email.
+            </p>
+
+            <button type="submit" class="book-btn">
+                Pay & Confirm
+            </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+            {% endif %}
+    </main>
+
+</div>
+
+  <script>
+    setTimeout(function () {
+        const messages = document.getElementById("flash-messages");
+        if (messages) {
+            messages.style.opacity = "0";
+            setTimeout(() => messages.remove(), 500); // smooth fade
+        }
+    }, 5000); // 5 seconds
+</script>
+</body>
+</html>

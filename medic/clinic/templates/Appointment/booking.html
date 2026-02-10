@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Online{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- GREEN HEADER STRIP -->
+<section class="booking-hero">
+    <h1>Book Online</h1>
+</section>
+
+<!-- SERVICES GRID -->
+<section class="booking-container">
+
+    <!-- CARD 1 -->
+    <div class="service-card">
+        <img src="{% static 'images/sono.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>Sonography</h3>
+            <p>1 hr</p>
+            <p class="price">$320</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="service-card">
+        <img src="{% static 'images/cardio.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>Consult with a Cardiologist</h3>
+            <p>1 hr</p>
+            <p class="price">$100</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="service-card">
+        <img src="{% static 'images/doct.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>Consult with a Doctor</h3>
+            <p>1 hr</p>
+            <p class="price">$80</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="service-card">
+        <img src="{% static 'images/xray.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>X-Ray Examination</h3>
+            <p>1 hr</p>
+            <p class="price">$430</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="service-card">
+        <img src="{% static 'images/mri.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>MRI Examination</h3>
+            <p>1 hr</p>
+            <p class="price">$450</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+    <!-- CARD 6 -->
+    <div class="service-card">
+        <img src="{% static 'images/n.jpg' %}" alt="">
+        <div class="service-content">
+            <h3>Consultation with Neurologist</h3>
+            <p>1 hr</p>
+            <p class="price">$120</p>
+            <a href="{% url 'login' %}" class="book-btns">Book Now</a>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

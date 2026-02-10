@@ -1,0 +1,411 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+
+<nav class="admin-navbar">
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="nav-left">
+        <div class="nav-logo">
+            <span class="pulse">~</span>
+            <span class="medical">Medical</span>
+            <span class="clinic">Clinic</span>
+        </div>
+        <div class="nav-subtitle">Exams & Diagnostics</div>
+    </div>
+    <h2>Medical Clinic | Admin</h2>
+    <a href="{% url 'admin_logout' %}" class="logout-btn">Logout</a>
+
+    <div class="nav-actions">
+        <span class="notification" onclick="toggleNotifications()">🔔</span>
+
+    </div>
+</nav>
+
+<div class="admin-wrapper">
+
+    <aside class="sidebar" id="adminSidebar">
+        <a href="{% url 'admin_dashboard' %}" style="border: solid black 2px;">🏠 Dashboard</a>
+         <h4>Patients</h4>
+        <a href="{% url 'admin_patients' %}">View Patients</a>
+        <a href="{% url 'admin_add_patient' %}">Add Patient</a>
+        <h4>Doctors</h4> 
+        <a href="{% url 'admin_doctors' %}">View Doctors</a> 
+        <a href="{% url 'admin_add_doctor' %}">Add Doctor</a>
+        <h4>Communication</h4>
+        <a href="#">Mass Message</a>
+        <h4>Help Desk</h4> 
+        <a href="#">Patient Queries</a>
+        <a href="#">Doctor Queries</a>
+    </aside>
+
+     <main class="main-content">
+
+        {% if messages %}
+        <div class="patient-messages" id="flash-messages">
+            {% for message in messages %}
+                <div class="msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if page == "dashboard" %}
+        <!-- DASHBOARD -->
+        <h2>Welcome Admin 👋</h2>
+        <p style="font-weight: bold; size: 20px;">Manage 
+        patients, doctors & clinic operations</p>
+
+        <div class="dashboard-cards">
+            <div class="admin-card">👥 Total Patients</div>
+            <div class="admin-card">🩺 Total Doctors</div>
+            <div class="admin-card">📩 Queries</div>
+        </div>
+        {% endif %}
+
+        {% if page == "patients" %}
+        <!-- PATIENT TABLE -->
+        <h2>All Patients</h2>
+
+        <table class="admin-table">
+            <tr> 
+                <th>Image</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Action</th>
+            </tr>
+
+            {% for p in patients %}
+            <tr>
+                <td>
+             {% if p.image %}
+             <img src="{{ p.image.url }}" class="doc-img">
+             {% else %}
+              No Image
+             {% endif %}
+          </td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.gender }}</td>
+                <td>{{ p.age }}</td>
+                <td>{{ p.email }}</td>
+                <td>{{ p.mobile }}</td>
+                <td>
+                    <a href="{% url 'edit_patient' p.id %}" class="btn-edit">Edit</a>
+                    <a href="{% url 'delete_patient' p.id %}"
+                       class="btn-delete"
+                       onclick="return confirm('Delete patient?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+
+        {% if page == "edit_patient" %}
+        <h2>Edit Patient</h2>
+
+          <form method="post" class="edit-form">
+         {% csrf_token %}
+
+    <label>Name</label>
+    <input type="text" name="name" value="{{ patient.name }}" required>
+
+    <label>Age</label>
+    <input type="number" name="age" value="{{ patient.age }}" required>
+
+    <label>Mobile</label>
+    <input type="text" name="mobile" value="{{ patient.mobile }}" required>
+
+    <label>Address</label>
+    <textarea name="address">{{ patient.address }}</textarea>
+
+    <button type="submit" class="btn-save">Update Patient</button>
+    <a href="{% url 'admin_patients' %}" class="btn-cancel">Cancel</a>
+         </form>
+        {% endif %}
+     
+
+
+     {% if page == "add_patient" %}
+<h2>Add New Patient</h2>
+
+<form class="new_patient-form" action="{% url 'new_patient_register' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="source" value="admin">
+
+    <div class="form-row">
+        <select name="salutation" required>
+            <option value="">Salutation</option>
+            <option>Mr.</option>
+            <option>Ms.</option>
+            <option>Miss.</option>
+        </select>
+        <input type="text" name="name" placeholder="Patient Name" required>
+    </div>
+
+    <div class="form-row">
+        <select name="gender" required>
+            <option value="">Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Others</option>
+        </select>
+        <input type="number" name="age" placeholder="Age" required>
+    </div>
+
+    <div class="form-row">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+    </div>
+
+    <!-- FILE UPLOAD SECTION -->
+    <div class="upload-section">
+    <div class="upload-box">
+        <label>
+            🖼️ Doctor Profile Image
+            <span>(JPG / PNG)</span>
+        </label>
+        <input type="file" name="image" accept="image/*">
+    </div>
+
+    <div class="upload-box">
+        <label>
+            📄 Certification / Document
+            <span>(PDF / JPG)</span>
+        </label>
+        <input type="file" name="document" accept=".pdf,image/*">
+    </div>
+    </div>
+
+    <div class="form-row">
+        <input type="text" name="mobile" placeholder="Mobile" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+    </div>
+
+    <div class="form-row full">
+        <input type="text" name="address" placeholder="Address" required>
+    </div>
+
+    <button type="submit" class="btn-save">Register Patient</button>
+    <a href="{% url 'admin_patients' %}" class="btn-cancel">Cancel</a>
+</form>
+{% endif %}
+
+
+{% if page == "add_doctor" %}
+<h2>Add Doctor</h2>
+
+<form method="post" enctype="multipart/form-data"
+      class="new_patient-form" action="{% url 'save_doctor' %}">
+{% csrf_token %}
+
+<div class="form-row">
+    <input type="text" name="name" placeholder="Doctor Name" required>
+    <select name="specialization" required>
+            <option value="">Specialization</option>
+            <option>Cardiologist</option>
+            <option>Dermatologist</option>
+            <option>Orthopaedics</option>
+            <option>Pediatrician</option>
+            <option>Opthalmologist</option>
+            <option>Dentist</option>
+            <option>Nephrologist</option>
+            <option>Surgeon</option>
+            <option>Oncologist</option>
+            <option>Psychiatrist</option>
+            <option>Hepatologist</option>
+            <option>Gynaecologist</option>
+            <option>Gastroenterologists</option>
+            <option>Otolaryngologist</option>
+            <option>Pulononologist</option>
+        </select>
+        </div>
+
+<div class="form-row">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="mobile" placeholder="Mobile" required>
+</div>
+
+<div class="form-row">
+    <input type="number" name="experience" placeholder="Experience (Years)" required>
+    <input type="text" name="address" placeholder="Address" required>
+</div>
+
+<!-- FILE UPLOAD SECTION -->
+<div class="upload-section">
+    <div class="upload-box">
+        <label>
+            🖼️ Doctor Profile Image
+            <span>(JPG / PNG)</span>
+        </label>
+        <input type="file" name="image" accept="image/*">
+    </div>
+
+    <div class="upload-box">
+        <label>
+            📄 Certification / Document
+            <span>(PDF / JPG)</span>
+        </label>
+        <input type="file" name="document" accept=".pdf,image/*">
+    </div>
+</div>
+
+<div class="form-row">
+    <input type="password" name="password" placeholder="Password" required>
+    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+</div>
+
+<button class="btn-save">Save Doctor</button>
+<a href="{% url 'admin_doctors' %}" class="btn-cancel">Cancel</a>
+
+</form>
+{% endif %}
+
+
+
+{% if page == "doctors" %}
+<h2>Doctors List</h2>
+
+<table class="admin-table">
+<tr>
+ 
+    <th>Image</th>
+    <th>Name</th>
+    <th>Specialization</th>
+    <th>Mobile</th>
+    <th>Email</th>
+    <th>Experience</th>
+    <th>Document</th>
+    <th>Action</th>
+</tr>
+
+{% for d in doctors %}
+<tr>
+     
+    <td>
+        {% if d.image %}
+            <img src="{{ d.image.url }}" class="doc-img">
+        {% else %}
+            No Image
+        {% endif %}
+    </td>
+    <td>{{ d.name }}</td>
+    <td>{{ d.specialization }}</td>
+    <td>{{ d.mobile }}</td>
+    <td>{{ d.email }} </td>
+    <td>{{ d.experience }}Years </td>
+    <td>
+        {% if d.document %}
+            <a href="{{ d.document.url }}" target="_blank">View</a>
+        {% else %}
+            —
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'edit_doctor' d.id %}" class="btn-edit">Edit</a>
+        <a href="{% url 'delete_doctor' d.id %}" class="btn-delete"
+           onclick="return confirm('Delete Doctor?')">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+       
+         
+         {% if page == "edit_doctor" %}
+<h2>Edit Doctor</h2>
+
+<form method="post" enctype="multipart/form-data" class="edit-form">
+{% csrf_token %}
+
+<label>Name</label>
+<input type="text" name="name" value="{{ doctor.name }}" required>
+
+<label>Email</label>
+<input type="email" name="email" value="{{ doctor.email }}" readonly>
+
+<label>Specialization</label>
+<input type="text" name="specialization" value="{{ doctor.specialization }}" required>
+
+<label>Mobile</label>
+<input type="text" name="mobile" value="{{ doctor.mobile }}" required>
+
+<label>Experience (Years)</label>
+<input type="number" name="experience" value="{{ doctor.experience }}" required>
+
+<label>Address</label>
+<textarea name="address" required>{{ doctor.address }}</textarea>
+
+<hr>
+
+<label>Current Profile Image</label>
+{% if doctor.image %}
+    <img src="{{ doctor.image.url }}" class="doc-img">
+{% else %}
+    <p>No image uploaded</p>
+{% endif %}
+<input type="file" name="image">
+
+<label>Current Document / Certificate</label>
+{% if doctor.document %}
+    <a href="{{ doctor.document.url }}" target="_blank">View Document</a>
+{% else %}
+    <p>No document uploaded</p>
+{% endif %}
+<input type="file" name="document">
+
+<hr>
+
+<label>New Password (optional)</label>
+<input type="password" name="password" placeholder="Leave blank to keep old password">
+
+<label>Confirm Password</label>
+<input type="password" name="confirm_password">
+
+<button type="submit" class="btn-save">Update Doctor</button>
+<a href="{% url 'admin_doctors' %}" class="btn-cancel">Cancel</a>
+
+</form>
+{% endif %}
+
+
+
+
+
+
+
+    </main>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const flashMessages = document.getElementById("flash-messages");
+
+    if (!flashMessages) return;
+
+    // show fully first
+    flashMessages.style.opacity = "1";
+
+    // wait 5 seconds AFTER page load
+    setTimeout(() => {
+        flashMessages.style.transition = "opacity 0.6s ease";
+        flashMessages.style.opacity = "0";
+
+        setTimeout(() => {
+            flashMessages.remove();
+        }, 600);
+    }, 5000);
+});
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/doctor_dash.css' %}">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="doctor-navbar">
+    <div class="nav-left">
+        <div class="nav-logo">
+            <span class="pulse">~</span>
+            <span class="medical">Medical</span>
+            <span class="clinic">Clinic</span>
+        </div>
+        <div class="nav-subtitle">Exams & Diagnostics</div>
+    </div>
+    <ul class="nav-links">
+        <li><a href="?page=appointments">Appointments</a></li>
+        <li><a href="?page=calls">Call Requests</a></li>
+        <li><a href="?page=prescriptions">Prescription Queries</a></li>
+        <li><a href="?page=emergency">Emergency</a></li>
+    </ul>
+
+    <div class="nav-actions">
+        
+        <a href="{% url 'admin_logout' %}">Logout</a>
+        <a href="?page=notifications">🔔</a>
+
+    </div>
+
+    <div class="mobile-actions">
+    <span class="menu-toggle">☰</span>
+    <span class="profile-toggle">👤</span>
+</div>
+</nav>
+
+<div class="doctor-wrapper">
+
+    <!-- ===== LEFT SIDEBAR ===== -->
+    <aside class="left-sidebar">
+        <a href="?page=home">Dashboard</a>
+        <a href="?page=patients">My Patients</a>
+        <a href="?page=messages">Messages</a>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="doctor-content">
+
+        <!-- MESSAGES -->
+        {% if messages %}
+        <div class="flash-messages" id="flash-messages">
+            {% for message in messages %}
+            <div class="msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+{% if not doctor.is_profile_completed and not request.session.skip_profile %}
+
+<div class="form-card">
+    <h2 class="dashboard-title">Complete Your Profile</h2>
+
+    <form class="doctor-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <textarea name="bio" placeholder="Professional Bio"></textarea>
+        <input type="text" name="qualification" placeholder="Qualification">
+        <input type="text" name="hobbies" placeholder="Hobbies">
+        <input type="file" name="image">
+
+        <div class="form-actions">
+            <button type="submit">Save Profile</button>
+
+            <!-- ✅ SKIP BUTTON -->
+         <a href="?page=home&skip=true" class="skip-btn">Skip for now</a>
+        </div>
+    </form>
+</div>
+
+{% else %}
+
+    {% if page == "home" %}
+        <h2>Welcome Dr. {{ doctor.name }}</h2>
+        <p>Specialization: {{ doctor.specialization }}</p>
+    {% endif %}
+
+{% endif %}
+
+
+{% if page == "appointments" %}
+
+<h2 class="section-title">Upcoming Appointments</h2>
+
+<div class="appointments-grid">
+
+{% for appt in appointments %}
+
+<div class="appointment-card">
+
+    <!-- PATIENT IMAGE -->
+    <div class="patient-avatar">
+        {% if appt.patient.profile_image %}
+            <img src="{{ appt.patient.profile_image.url }}">
+        {% else %}
+            <img src="{% static 'img/default-user.png' %}">
+        {% endif %}
+    </div>
+
+    <!-- PATIENT INFO -->
+    <div class="patient-info">
+        <h3>{{ appt.first_name }} {{ appt.last_name }}</h3>
+
+        <p class="meta">
+            <span>{{ appt.patient.gender }}</span>
+            <span>•</span>
+            <span>{{ appt.patient.age }} yrs</span>
+        </p>
+
+        <p class="message">
+            {{ appt.message|default:"No message provided by patient." }}
+        </p>
+
+        <div class="appointment-meta">
+            <span>📅 {{ appt.date }}</span>
+            <span>⏰ {{ appt.time }}</span>
+        </div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="status-box">
+        <span class="status confirmed">{{ appt.status }}</span>
+    </div>
+
+</div>
+
+{% empty %}
+<p>No appointments yet</p>
+
+{% endfor %}
+</div>
+
+{% endif %}
+{% if page == "prescriptions" %}
+<div class="prescription-section">
+    <h2 class="section-title">Prescription Section</h2>
+
+    {% for appt in appointments %}
+    <div class="patient-card">
+    {% if appt.patient.image %}
+    <img src="{{ appt.patient.image.url }}" alt="{{ appt.patient.name }}">
+     {% else %}
+    <img src="{% static 'images/d1.png' %}" alt="Default Patient">
+    {% endif %}
+        <h3>{{ appt.patient.name }}</h3>
+        <p>{{ appt.patient.email }}</p>
+        <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
+
+        <a href="{% url 'doctor_dashboard' %}?page=prescriptions&open_chat_id={{ appt.id }}" class="chat-btn">
+            💬 Message
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% if chat_appointment %}
+<div class="chat-wrapper">
+    <div class="chat-header">
+        {% load static %}
+
+    {% if chat_appointment.patient.image %}
+    <img src="{{ chat_appointment.patient.image.url }}" alt="{{ chat_appointment.patient.name }}">
+    {% else %}
+    <img src="{% static 'images/default-user.png' %}" alt="Default User">
+    {% endif %}
+
+        <div>
+            <h3>{{ chat_appointment.patient.name }}</h3>
+            <small>{{ chat_appointment.patient.email }}</small>
+        </div>
+    </div>
+
+    <div class="chat-box">
+        {% for msg in messages %}
+        <div class="msg {{ msg.sender }}">
+            {{ msg.message }}
+            <span>{{ msg.created_at|time:"H:i" }}</span>
+        </div>
+        {% empty %}
+        <div class="msg system">No messages yet. Start the conversation!</div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="chat-input">
+        {% csrf_token %}
+        <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
+        <input type="text" name="message" placeholder="Type your message..." required>
+        <button type="submit" name="send_message">Send</button>
+    </form>
+
+    <form method="POST" style="margin-top: 10px;">
+        {% csrf_token %}
+        <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
+        <button type="submit" name="end_chat" class="end-chat-btn">End Chat</button>
+    </form>
+</div>
+{% endif %}
+{% endif %}
+
+
+ {% if page == "edit_profile" %}
+
+<div class="form-card">
+    <h2 class="dashboard-title">Edit Profile</h2>
+
+    <form class="doctor-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <textarea name="bio">{{ doctor.bio }}</textarea>
+        <input type="text" name="qualification" placeholder=""Qualification value="{{ doctor.qualification }}">
+        <input type="text" name="hobbies" placeholder="Hobbies" value="{{ doctor.hobbies }}">
+        <input type="file" name="image">
+        <button type="submit">Update Profile</button>
+    </form>
+</div>
+
+
+{% endif %}
+
+{% if page == "notifications" %}
+<h2>Notifications</h2>
+<p>No new notifications</p>
+{% endif %}
+
+
+
+    </main>
+
+    <!-- ===== RIGHT PROFILE SIDEBAR ===== -->
+    <aside class="profile-sidebar">
+        <img src="{{ doctor.image.url }}" class="profile-pic">
+        <a href="?page=edit_profile">Edit Profile</a>
+
+        <h3>Dr. {{ doctor.name }}</h3>
+        <p>{{ doctor.specialization }}</p>
+        <p>{{ doctor.email }}</p>
+        <div class="profile-info">
+    <p><span>Bio:</span> {{ doctor.bio }}</p>
+    <p><span>Qualification:</span> {{ doctor.qualification }}</p>
+    <p><span>Hobbies:</span> {{ doctor.hobbies }}</p>
+    </div>
+
+
+        <hr>
+
+        <a href="?page=help">Help</a>
+        <a href="?page=contact">Contact Admin</a>
+        <a href="?page=settings">Settings</a>
+    </aside>
+
+</div>
+
+<!-- NOTIFICATION PANEL -->
+{% comment %} <div id="notification-panel" class="notification-panel">
+    <h4>Notifications</h4>
+    <p>No new notifications</p>
+</div> {% endcomment %}
+  
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const flashMessages = document.getElementById("flash-messages");
+
+    if (!flashMessages) return;
+
+    // show fully first
+    flashMessages.style.opacity = "1";
+
+    // wait 5 seconds AFTER page load
+    setTimeout(() => {
+        flashMessages.style.transition = "opacity 0.6s ease";
+        flashMessages.style.opacity = "0";
+
+        setTimeout(() => {
+            flashMessages.remove();
+        }, 600);
+    }, 5000);
+});
+
+
+
+{% comment %} toogle {% endcomment %}
+
+document.querySelector(".menu-toggle").onclick = () => {
+    document.querySelector(".left-sidebar").classList.toggle("active");
+};
+
+document.querySelector(".profile-toggle").onclick = () => {
+    document.querySelector(".profile-sidebar").classList.toggle("active");
+};
+
+
+</script>
+
+
+</body>
+
+</html>
