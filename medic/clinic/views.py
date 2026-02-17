@@ -415,6 +415,9 @@ from django.db.models import Q
 from django.contrib import messages
 from .models import Patient, Doctor, Appointment, ChatThread, ChatMessage
 from .utils import send_auto_reply  # your email function
+import razorpay
+from django.conf import settings
+
 
 def patient_dashboard(request):
     # ================= SESSION CHECK =================
@@ -654,82 +657,255 @@ def patient_dashboard(request):
     # =================================================
     # 6️⃣ BOOKING CONFIRMATION
     # =================================================
-    if page == "booking" and doctor_id:
-        doctor = Doctor.objects.get(id=doctor_id)
-        selected_date = request.GET.get("date")
-        selected_time = request.GET.get("time")
+    # if page == "booking" and doctor_id:
+    #     doctor = Doctor.objects.get(id=doctor_id)
+    #     selected_date = request.GET.get("date")
+    #     selected_time = request.GET.get("time")
 
-        if request.method == "POST":
+    #     if request.method == "POST":
+    #         appointment = Appointment.objects.create(
+    #             patient=patient,
+    #             doctor=doctor,
+    #             date=selected_date,
+    #             time=selected_time,
+    #             first_name=request.POST.get("first_name"),
+    #             last_name=request.POST.get("last_name"),
+    #             email=request.POST.get("email"),
+    #             phone=request.POST.get("phone"),
+    #             message=request.POST.get("text"),
+    #             amount=300,
+    #             status="Confirmed"
+    #         )
+    #         ChatThread.objects.create(appointment=appointment)
+
+    #         send_auto_reply(
+    #             email=patient.email,
+    #             subject="Appointment Confirmed - Medical Clinic",
+    #             message=f"""
+    #             Hello {patient.name},
+
+    #             Your appointment has been confirmed.
+
+    #             Doctor: {doctor.name}
+    #             Date: {selected_date}
+    #             Time: {selected_time}
+
+    #             Thank you!
+    #             Medical Clinic
+    #             """
+    #         )
+
+    #         send_auto_reply(
+    #             email=doctor.email,
+    #             subject="📅 New Appointment Booked",
+    #             message=f"""
+    #             Hello Dr. {doctor.name},
+
+    #             A new appointment has been booked.
+
+    #             Patient Name: {appointment.first_name} {appointment.last_name}
+    #             Patient Email: {appointment.email}
+    #             Phone: {appointment.phone}
+
+    #             Date: {appointment.date}
+    #             Time: {appointment.time}
+
+    #             Patient Message:
+    #             {appointment.message}
+
+    #             Regards,
+    #             Medical Clinic System
+    #             """
+    #         )
+
+    #         messages.success(request, "Appointment booked successfully ✅")
+    #         return redirect("/patient_dashboard/?page=appointments")
+
+    #     context.update({
+    #         "section": "booking",
+    #         "doctor": doctor,
+    #         "selected_date": selected_date,
+    #         "selected_time": selected_time,
+    #     })
+    #     return render(request, "dashboard/patient_dashboard.html", context)
+
+    # # =================================================
+    # # 7️⃣ FALLBACK
+    # # =================================================
+    # return render(request, "dashboard/patient_dashboard.html", context)
+
+
+
+    if page == "booking" and doctor_id:
+       doctor = Doctor.objects.get(id=doctor_id)
+       selected_date = request.GET.get("date")
+       selected_time = request.GET.get("time")
+
+       client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+       order_amount = 300 * 100  # in paise
+
+       order = client.order.create({
+        "amount": order_amount,
+        "currency": "INR",
+        "payment_capture": "1"
+       })
+
+       context.update({
+         "section": "booking",
+         "doctor": doctor,
+         "selected_date": selected_date,
+         "selected_time": selected_time,
+         "razorpay_key": settings.RAZORPAY_KEY_ID,
+         "order_id": order["id"],
+         "amount": order_amount,
+         })
+
+    return render(request, "dashboard/patient_dashboard.html", context)
+
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+   
+
+@csrf_exempt
+def payment_verify(request):
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        client = razorpay.Client(
+            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+        )
+
+        params_dict = {
+            "razorpay_order_id": data["razorpay_order_id"],
+            "razorpay_payment_id": data["razorpay_payment_id"],
+            "razorpay_signature": data["razorpay_signature"]
+        }
+
+        try:
+            client.utility.verify_payment_signature(params_dict)
+
+            patient = Patient.objects.get(id=request.session.get("patient_id"))
+            doctor = Doctor.objects.get(id=data["doctor_id"])
+
+            # 🔥 YOUR ORIGINAL APPOINTMENT CODE (UNCHANGED)
             appointment = Appointment.objects.create(
                 patient=patient,
                 doctor=doctor,
-                date=selected_date,
-                time=selected_time,
-                first_name=request.POST.get("first_name"),
-                last_name=request.POST.get("last_name"),
-                email=request.POST.get("email"),
-                phone=request.POST.get("phone"),
-                message=request.POST.get("text"),
+                date=data["date"],
+                time=data["time"],
+                first_name=data["first_name"],
+                last_name=data["last_name"],
+                email=data["email"],
+                phone=data["phone"],
+                message=data["message"],
                 amount=300,
-                status="Confirmed"
+                status="Confirmed",
+                razorpay_order_id=data["razorpay_order_id"],
+                razorpay_payment_id=data["razorpay_payment_id"],
+                razorpay_signature=data["razorpay_signature"],
+                is_paid=True
             )
+
             ChatThread.objects.create(appointment=appointment)
 
+            # 🔥 SAME MAIL LOGIC
             send_auto_reply(
                 email=patient.email,
                 subject="Appointment Confirmed - Medical Clinic",
                 message=f"""
-                Hello {patient.name},
+Hello {patient.name},
 
-                Your appointment has been confirmed.
+Your appointment has been confirmed.
 
-                Doctor: {doctor.name}
-                Date: {selected_date}
-                Time: {selected_time}
+Doctor: {doctor.name}
+Date: {data['date']}
+Time: {data['time']}
 
-                Thank you!
-                Medical Clinic
-                """
+Thank you!
+Medical Clinic
+"""
             )
 
             send_auto_reply(
                 email=doctor.email,
                 subject="📅 New Appointment Booked",
                 message=f"""
-                Hello Dr. {doctor.name},
+Hello Dr. {doctor.name},
 
-                A new appointment has been booked.
+A new appointment has been booked.
 
-                Patient Name: {appointment.first_name} {appointment.last_name}
-                Patient Email: {appointment.email}
-                Phone: {appointment.phone}
+Patient Name: {appointment.first_name} {appointment.last_name}
+Patient Email: {appointment.email}
+Phone: {appointment.phone}
 
-                Date: {appointment.date}
-                Time: {appointment.time}
+Date: {appointment.date}
+Time: {appointment.time}
 
-                Patient Message:
-                {appointment.message}
+Patient Message:
+{appointment.message}
 
-                Regards,
-                Medical Clinic System
-                """
+Regards,
+Medical Clinic System
+"""
             )
 
-            messages.success(request, "Appointment booked successfully ✅")
-            return redirect("/patient_dashboard/?page=appointments")
+            return JsonResponse({
+                "status": "success",
+                "redirect_url": "/patient_dashboard/?page=appointments"
+            })
 
-        context.update({
-            "section": "booking",
-            "doctor": doctor,
-            "selected_date": selected_date,
-            "selected_time": selected_time,
-        })
-        return render(request, "dashboard/patient_dashboard.html", context)
+        except:
+            return JsonResponse({"status": "failed"})
 
-    # =================================================
-    # 7️⃣ FALLBACK
-    # =================================================
-    return render(request, "dashboard/patient_dashboard.html", context)
+
+
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import Table
+from reportlab.lib.styles import getSampleStyleSheet
+from django.http import HttpResponse
+
+
+def download_invoice(request, appointment_id):
+    appointment = Appointment.objects.get(id=appointment_id)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{appointment.id}.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph("<b>Medical Clinic Invoice</b>", styles["Title"]))
+    elements.append(Spacer(1, 20))
+
+    data = [
+        ["Patient Name", appointment.patient.name],
+        ["Doctor", appointment.doctor.name],
+        ["Specialization", appointment.doctor.specialization],
+        ["Date", str(appointment.date)],
+        ["Time", appointment.time],
+        ["Amount Paid", "₹300"],
+        ["Payment ID", appointment.razorpay_payment_id],
+    ]
+
+    table = Table(data)
+    elements.append(table)
+
+    doc.build(elements)
+
+    return response
+
+
+
 
 
 

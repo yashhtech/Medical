@@ -134,6 +134,9 @@ MESSAGE_TAGS = {
 ADMIN_EMAIL = "admin@gmail.com"
 ADMIN_PASSWORD = "admin@123"
 
+RAZORPAY_KEY_ID = "rzp_test_*************"
+RAZORPAY_KEY_SECRET = "*****************"
+
 
 
 # USED FOR EMAIL

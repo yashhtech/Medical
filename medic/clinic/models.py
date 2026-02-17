@@ -93,6 +93,11 @@ class Appointment(models.Model):
         max_length=20,
         default="Confirmed"
     )
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
+    is_paid = models.BooleanField(default=False)
+
 
     created_at = models.DateTimeField(auto_now_add=True)
 

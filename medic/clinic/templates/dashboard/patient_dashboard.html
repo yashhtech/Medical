@@ -238,9 +238,16 @@
             {{ appt.date }} | {{ appt.time }}
           </p>
           <span class="status confirmed">Confirmed</span>
+          {% if appt.is_paid %}
+          <a href="{% url 'download_invoice' appt.id %}" class="reschedule-btn">
+          📄 Download Invoice
+          </a>
+{% endif %}
+
          </div>
 
         <div class="appt-actions">
+           <span class="status confirmed">Paid INR 300 </span>
           <a href="?page=schedule&doctor_id={{ appt.doctor.id }}" class="reschedule-btn">
             Reschedule
            </a>
@@ -376,8 +383,8 @@
 <div class="schedule-page-wrapper">
 
     <a href="{% url 'patient_dashboard' %}?page=book" class="back-link" style="color: red; font-weight: bolder;">← Back</a>
-         <h1 class="page-title" style="color: aliceblue; font-weight: bolder;">Schedule your service</h1>
-         <p class="page-subtitle" style="color: aliceblue; font-weight: bolder;">Check out our availability and book the date and time that works for you</p>
+         <h1 class="page-title" style="color:black; font-weight: bolder;">Schedule your service</h1>
+         <p class="page-subtitle" style="color: black; font-weight: bolder;">Check out our availability and book the date and time that works for you</p>
 
            <div class="schedule-card">
 
@@ -387,7 +394,7 @@
 
             <div class="month-header">
               <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:-1 }}&year={{ year }}">‹</a>
-               <strong>{{ month_name }}/{{ year }}</strong>
+               <strong style="color: black;">{{ month_name }}/{{ year }}</strong>
                 <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:1 }}&year={{ year }}">›</a>
               </div>
 
@@ -532,16 +539,16 @@
 
             <hr class="purple-line">
 
-            <h4>Payment Details</h4>
+            <h4 style="color: black;">Payment Details</h4>
 
             <div class="payment-row">
-                <span>Payment for consult with {{ doctor.name }}</span>
-                <span>₹300</span>
+                <span style="color: black;">Payment for consult with {{ doctor.name }}</span>
+                <span style="color: black;">₹300</span>
             </div>
 
             <div class="payment-row total">
-                <strong>Total</strong>
-                <strong>₹300</strong>
+                <strong style="color: black;">Total</strong>
+                <strong style="color: black;">₹300</strong>
             </div>
 
             <p class="notify-text">
@@ -549,11 +556,15 @@
                 appointment notifications via email.
             </p>
 
-            <button type="submit" class="book-btn">
-                Pay & Confirm
-            </button>
+            <button type="button" id="show-rzp"  class="book-btn">Pay & Confirm</button>
 
             </form>
+
+            <div id="rzp-section" style="display:none;">
+           <button type="button" id="rzp-button1"  class="book-btn">
+            Pay with Razorpay
+           </button>
+         </div>
         </div>
 
     </div>
@@ -567,7 +578,69 @@
 
 </div>
 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <script>
+
+          
+      
+      document.getElementById("show-rzp").onclick = function(){
+    document.getElementById("rzp-section").style.display = "block";
+};
+
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Medical Clinic",
+    "description": "Doctor Appointment",
+    "order_id": "{{ order_id }}",
+
+    "handler": function (response){
+
+        fetch("{% url 'payment_verify' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                doctor_id: "{{ doctor.id }}",
+                date: "{{ selected_date }}",
+                time: "{{ selected_time }}",
+                first_name: document.querySelector('[name="first_name"]').value,
+                last_name: document.querySelector('[name="last_name"]').value,
+                email: document.querySelector('[name="email"]').value,
+                phone: document.querySelector('[name="phone"]').value,
+                message: document.querySelector('[name="text"]').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status == "success"){
+                window.location.href = data.redirect_url;
+            } else {
+                alert("Payment Failed");
+            }
+        });
+    }
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+
+
+
+
+
+       
     setTimeout(function () {
         const messages = document.getElementById("flash-messages");
         if (messages) {

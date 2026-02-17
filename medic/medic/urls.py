@@ -37,11 +37,10 @@ urlpatterns = [
     path("new_patient_register/", new_patient_register, name="new_patient_register"),
     path("login/<str:role>/",role_login, name="role_login"),
     path("patient_dashboard/",patient_dashboard, name="patient_dashboard"),
-    path(
-        "cancel-appointment/<int:id>/",
-         cancel_appointment,
-        name="cancel_appointment"
-    ),
+    path("payment-verify/", payment_verify, name="payment_verify"),
+    path("cancel-appointment/<int:id>/",cancel_appointment,name="cancel_appointment"),
+    path("invoice/<int:appointment_id>/",download_invoice, name="download_invoice"),
+
     path('logout_patient/', custom_logout, name='logout_patient'),
     path("doctor_dashboard/",doctor_dashboard, name="doctor_dashboard"),
     path("admin/dashboard/", admin_dashboard, name="admin_dashboard"),
