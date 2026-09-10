@@ -53,6 +53,32 @@
         <a href="?role=new_patient" class="login-option new-patient">➕ New Patient</a>
     </div>
 
+    <!-- TESTING CREDENTIALS CARD -->
+    <div style="margin-top: 25px; padding: 16px; background: rgba(255,255,255,0.85); border-radius: 12px; text-align: left; font-size: 13px; color: #1e293b; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <strong style="color: #0f766e; font-size: 14px;">🧪 Test Accounts (From Database)</strong>
+            <span style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">Quick Testing</span>
+        </div>
+        
+        <div style="margin-bottom: 10px; padding: 8px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #0d9488;">
+            <p style="margin: 0; color: #334155;"><strong>Patient:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ sample_patient_email }}</code></p>
+            <p style="margin: 3px 0 0; color: #334155;"><strong>Password:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ sample_patient_password }}</code></p>
+            <a href="?role=patient" style="display: inline-block; margin-top: 6px; font-size: 12px; color: #0d9488; text-decoration: underline; font-weight: 600;">→ Login as Patient</a>
+        </div>
+
+        <div style="margin-bottom: 10px; padding: 8px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #2563eb;">
+            <p style="margin: 0; color: #334155;"><strong>Doctor:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ sample_doctor_email }}</code></p>
+            <p style="margin: 3px 0 0; color: #334155;"><strong>Password:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ sample_doctor_password }}</code></p>
+            <a href="?role=doctor" style="display: inline-block; margin-top: 6px; font-size: 12px; color: #2563eb; text-decoration: underline; font-weight: 600;">→ Login as Doctor</a>
+        </div>
+
+        <div style="padding: 8px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #9333ea;">
+            <p style="margin: 0; color: #334155;"><strong>Admin:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ admin_email }}</code></p>
+            <p style="margin: 3px 0 0; color: #334155;"><strong>Password:</strong> <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 4px;">{{ admin_password }}</code></p>
+            <a href="?role=admin" style="display: inline-block; margin-top: 6px; font-size: 12px; color: #9333ea; text-decoration: underline; font-weight: 600;">→ Login as Admin</a>
+        </div>
+    </div>
+
     {% elif role == "new_patient" %}
     <!-- ================= NEW PATIENT REGISTER ================= -->
     <h2 style="text-align:center;">
@@ -91,18 +117,10 @@
     <div class="upload-section">
      <div class="upload-box">
         <label>
-            🖼️ Doctor Profile Image
+            🖼️ Patient Profile Photo
             <span>(JPG / PNG)</span>
         </label>
         <input type="file" name="image" accept="image/*">
-     </div>
-
-     <div class="upload-box">
-        <label>
-            📄 Certification / Document
-            <span>(PDF / JPG)</span>
-        </label>
-        <input type="file" name="document" accept=".pdf,image/*">
      </div>
      </div>
 
@@ -128,13 +146,41 @@
     <!-- ================= LOGIN FORM ================= -->
     <h2>{{ role|title }} Login</h2>
 
-    <form method="post" action="{% url 'role_login' role %}"  class="login-form">
+    <!-- DEMO CREDENTIAL NOTICE FOR CURRENT ROLE -->
+    <div style="margin-bottom: 20px; padding: 12px 14px; background: rgba(255,255,255,0.92); border-radius: 10px; font-size: 13px; text-align: left; color: #1e293b; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #cbd5e1;">
+        <p style="margin: 0 0 6px; font-weight: bold; color: #0f766e;">🧪 Testing Credentials:</p>
+        {% if role == "patient" %}
+            <p style="margin: 2px 0;">Email: <strong id="demo-email">{{ sample_patient_email }}</strong></p>
+            <p style="margin: 2px 0;">Password: <strong id="demo-pass">{{ sample_patient_password }}</strong></p>
+        {% elif role == "doctor" %}
+            <p style="margin: 2px 0;">Email: <strong id="demo-email">{{ sample_doctor_email }}</strong></p>
+            <p style="margin: 2px 0;">Password: <strong id="demo-pass">{{ sample_doctor_password }}</strong></p>
+        {% elif role == "admin" %}
+            <p style="margin: 2px 0;">Email: <strong id="demo-email">{{ admin_email }}</strong></p>
+            <p style="margin: 2px 0;">Password: <strong id="demo-pass">{{ admin_password }}</strong></p>
+        {% endif %}
+        <button type="button" onclick="autofillCredentials()" style="margin-top: 8px; width: 100%; padding: 6px; background: #0f766e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ⚡ Auto-Fill Credentials
+        </button>
+    </div>
+
+    <form method="post" action="{% url 'role_login' role %}" class="login-form">
         {% csrf_token %}
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <input type="email" id="login-email" name="email" placeholder="Email" required>
+        <input type="password" id="login-password" name="password" placeholder="Password" required>
         <button type="submit">Login as {{ role|title }}</button>
     </form>
 
+    <script>
+    function autofillCredentials() {
+        var emailEl = document.getElementById('demo-email');
+        var passEl = document.getElementById('demo-pass');
+        if (emailEl && passEl) {
+            document.getElementById('login-email').value = emailEl.innerText.trim();
+            document.getElementById('login-password').value = passEl.innerText.trim();
+        }
+    }
+    </script>
     {% endif %}
 
 </div>

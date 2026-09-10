@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Neurology{% endblock %}
+{% block title %}Neurology | Medical Clinic{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/cardiology.css' %}">
@@ -12,7 +12,7 @@
 <!-- HERO -->
 <section class="dept-hero">
     <div class="dept-hero-inner">
-        <h1>Neurology</h1>
+        <h1>Department of Neurology</h1>
     </div>
 </section>
 
@@ -21,27 +21,26 @@
     <div class="dept-container">
 
         <div class="dept-image">
-            <img src="{% static 'images/neuro.jpg' %}" alt="Neurology">
+            <img src="{% static 'images/neuro.jpg' %}" alt="Neurology Care">
         </div>
 
         <div class="dept-text">
-            <h2>The best care</h2>
+            <h2>Comprehensive Neurological Care &amp; Brain Health</h2>
 
             <p>
-                I'm a paragraph. Click here to add your own text and edit me.
-                It's easy. Just click “Edit Text” or double click me to add
-                your own content and make changes to the font.
+                Our Neurology Department provides world-class clinical diagnostic and rehabilitative support for conditions affecting the brain,
+                spinal cord, peripheral nerves, and musculature. We treat migraines, epilepsy, neuropathy, and movement disorders.
             </p>
 
             <p>
-                This is a great space to write long text about your services,
-                your doctors, and patient care.
+                Collaborating with diagnostic neurophysiologists, our clinicians offer EEG interpretations, nerve conduction studies,
+                and evidence-based therapeutic regimens designed to maximize patient independence and long-term quality of life.
             </p>
 
             <div class="dept-actions">
-                <a href="{% url 'booking' %}" class="btn-appointment">Book an Appointment</a>
+                <a href="{% url 'booking' %}" class="btn-appointment">Book a Consultation</a>
                 <span class="schedule-text">
-                    Schedule online. It's easy, fast and secure.
+                    Schedule online. Fast, verified, and secure.
                 </span>
             </div>
         </div>

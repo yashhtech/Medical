@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <circle cx="64" cy="64" r="64" fill="#e0f2fe"/>
+  <!-- Head -->
+  <circle cx="64" cy="45" r="22" fill="#0284c7"/>
+  <!-- Shoulders & Coat -->
+  <path d="M22,118 C22,88 42,78 64,78 C86,78 106,88 106,118 Z" fill="#0284c7"/>
+  <!-- Stethoscope / Cross emblem -->
+  <circle cx="64" cy="98" r="14" fill="#ffffff"/>
+  <path d="M61,90 h6 v16 h-6 z" fill="#0284c7"/>
+  <path d="M56,95 h16 v6 h-16 z" fill="#0284c7"/>
+</svg>

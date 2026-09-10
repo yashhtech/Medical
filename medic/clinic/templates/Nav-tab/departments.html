@@ -9,41 +9,36 @@
 
 <section class="depart-hero">
     <div class="depart-hero-overlay">
-        <h1>Departments</h1>
+        <h1>Medical Specialties &amp; Departments</h1>
     </div>
 </section>
 
-
-
 <section class="departments">
     <div class="dept-card">
-        <img src="{% static 'images/card.jpg' %}">
+        <img src="{% static 'images/card.jpg' %}" alt="Cardiology Department">
         <h3>Cardiology</h3>
         <p>
-            I'm a paragraph. Click here to add your own text and edit me.
-            Let your users get to know you.
+            Dedicated heart health services including ECG, echocardiograms, hypertension management, and preventative cardiovascular screening.
         </p>
-        <a href="{% url 'cardiology' %}" style="border: solid aqua 2px; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: lightgreen; text-decoration: none; color: black;" > Read More</a>
+        <a href="{% url 'cardiology' %}" class="dept-action-btn" style="display:inline-block; border: 2px solid #007bff; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: #007bff; text-decoration: none; color: white;">Read More</a>
     </div>
 
     <div class="dept-card">
-        <img src="{% static 'images/neuro.jpg' %}">
+        <img src="{% static 'images/neuro.jpg' %}" alt="Neurology Department">
         <h3>Neurology</h3>
         <p>
-            I'm a paragraph. Click here to add your own text and edit me.
-            Let your users get to know you.
+            Expert diagnostic consultation for brain, nerve, and spinal column disorders, neuro-rehabilitation, and headache clinics.
         </p>
-        <a href="{% url 'neurology' %}" style="border: solid aqua 2px; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: lightgreen; text-decoration: none; color: black; transition: 0.3 ease-in-out;"  > Read More</a>
+        <a href="{% url 'neurology' %}" class="dept-action-btn" style="display:inline-block; border: 2px solid #007bff; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: #007bff; text-decoration: none; color: white;">Read More</a>
     </div>
 
     <div class="dept-card">
-        <img src="{% static 'images/ortho.jpg' %}">
-        <h3>Orthopedics</h3>
+        <img src="{% static 'images/ortho.jpg' %}" alt="Orthopaedics Department">
+        <h3>Orthopaedics</h3>
         <p>
-            I'm a paragraph. Click here to add your own text and edit me.
-            Let your users get to know you.
+            Comprehensive musculoskeletal care specializing in joint replacement, sports injury recovery, arthritis care, and trauma management.
         </p>
-        <a href="{% url 'orthopaedics' %}" style="border: solid aqua 2px; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: lightgreen; text-decoration: none; color: black;"  > Read More</a>
+        <a href="{% url 'orthopaedics' %}" class="dept-action-btn" style="display:inline-block; border: 2px solid #007bff; padding: 10px 24px; border-radius: 30px; transition: all 0.3s ease; font-weight: 600; background-color: #007bff; text-decoration: none; color: white;">Read More</a>
     </div>
 </section>
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Orthopaedics{% endblock %}
+{% block title %}Orthopaedics | Medical Clinic{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/cardiology.css' %}">
@@ -12,7 +12,7 @@
 <!-- HERO -->
 <section class="dept-hero">
     <div class="dept-hero-inner">
-        <h1>Orthopaedics</h1>
+        <h1>Department of Orthopaedics</h1>
     </div>
 </section>
 
@@ -21,27 +21,26 @@
     <div class="dept-container">
 
         <div class="dept-image">
-            <img src="{% static 'images/ortho.jpg' %}" alt="Orthopaedics">
+            <img src="{% static 'images/ortho.jpg' %}" alt="Orthopaedics Care">
         </div>
 
         <div class="dept-text">
-            <h2>The best care</h2>
+            <h2>Advanced Bone, Joint &amp; Spine Solutions</h2>
 
             <p>
-                I'm a paragraph. Click here to add your own text and edit me.
-                It's easy. Just click “Edit Text” or double click me to add
-                your own content and make changes to the font.
+                Our Orthopaedics Department specializes in the prevention, diagnosis, and treatment of disorders of the bones,
+                joints, ligaments, tendons, and muscles. From sports injuries to degenerative arthritis, we offer comprehensive musculoskeletal therapies.
             </p>
 
             <p>
-                This space is ideal for explaining orthopaedic treatments,
-                joint care, surgeries, and rehabilitation services.
+                With advanced joint preservation methods, arthroscopic interventions, and integrated physical therapy, our team helps patients
+                regain pain-free mobility and return quickly to their everyday active lifestyles.
             </p>
 
             <div class="dept-actions">
                 <a href="{% url 'booking' %}" class="btn-appointment">Book an Appointment</a>
                 <span class="schedule-text">
-                    Schedule online. It's easy, fast and secure.
+                    Schedule online. Fast, verified, and secure.
                 </span>
             </div>
         </div>

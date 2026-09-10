@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Cardiology{% endblock %}
+{% block title %}Cardiology | Medical Clinic{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/cardiology.css' %}">
@@ -12,7 +12,7 @@
 <!-- HERO STRIP -->
 <section class="dept-hero">
     <div class="dept-hero-inner">
-        <h1>Cardiology</h1>
+        <h1>Department of Cardiology</h1>
     </div>
 </section>
 
@@ -22,29 +22,27 @@
 
         <!-- IMAGE -->
         <div class="dept-image">
-            <img src="{% static 'images/card.jpg' %}" alt="Cardiology">
+            <img src="{% static 'images/card.jpg' %}" alt="Cardiology Care">
         </div>
 
         <!-- TEXT -->
         <div class="dept-text">
-            <h2>The best care</h2>
+            <h2>Pioneering Cardiac Care &amp; Prevention</h2>
 
             <p>
-                I'm a paragraph. Click here to add your own text and edit me.
-                It's easy. Just click “Edit Text” or double click me to add
-                your own content and make changes to the font.
+                Our Department of Cardiology offers comprehensive diagnostic evaluations and state-of-the-art therapeutic options
+                for patients with coronary artery disease, heart rhythm abnormalities, hypertension, and heart failure.
             </p>
 
             <p>
-                This is a great space to write long text about your company
-                and your services. Talk about your team and what services
-                you provide.
+                Staffed by board-certified cardiologists and cardiac rehabilitation specialists, we utilize cutting-edge stress echocardiography,
+                Holter monitoring, and vascular Doppler technology to ensure accurate detection and personalized treatment protocols.
             </p>
 
             <div class="dept-actions">
-                <a href="{% url 'booking' %}" class="btn-appointment">Book an Appointment</a>
+                <a href="{% url 'booking' %}" class="btn-appointment">Book a Consultation</a>
                 <span class="schedule-text">
-                    Schedule online. It's easy, fast and secure.
+                    Schedule online. Fast, verified, and secure.
                 </span>
             </div>
         </div>

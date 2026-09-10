@@ -1,81 +1,93 @@
 """
-URL configuration for medic project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+URL configuration for Medical Clinic project.
 """
 from django.contrib import admin
-from django.urls import path , include
-from clinic.views import *
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from clinic.views import (
+    home, contact, about, departments, insurance,
+    cardiology, neurology, orthopaedics, booking,
+    login, role_login, new_patient_register,
+    patient_dashboard, payment_verify, cancel_appointment, download_invoice,
+    custom_logout, doctor_logout, doctor_dashboard,
+    admin_dashboard, admin_patients, edit_patient, delete_patient,
+    admin_add_patient, admin_logout,
+    admin_doctors, admin_add_doctor, save_doctor, edit_doctor, delete_doctor,
+    admin_queries,
+    newsletter_signup, contact_view,
+    medical_reports, video_call, notifications, medical_progress, medical_health,
+)
 
 urlpatterns = [
+    # Django built-in admin
     path('admin/', admin.site.urls),
+
+    # ── Public Pages ──────────────────────────────────────────────────────
     path('', home, name='home'),
-    path('newsletter_signup/',newsletter_signup, name='newsletter_signup'),
-    path('contact/', contact, name='contact'),
-    path('contact_view/',contact_view,name="contact_view"),
-    path("about/", about, name="about"),
+    path('about/', about, name='about'),
     path('departments/', departments, name='departments'),
     path('insurance/', insurance, name='insurance'),
-    path('cardiology',cardiology,name='cardiology'),
-    path('neurology',neurology,name='neurology'),
-    path('orthopaedics',orthopaedics,name='orthopaedics'),
-    path("booking/",booking, name="booking"),
-    path("login/",login, name="login"),
-    path("new_patient_register/", new_patient_register, name="new_patient_register"),
-    path("login/<str:role>/",role_login, name="role_login"),
-    path("patient_dashboard/",patient_dashboard, name="patient_dashboard"),
-    path("payment-verify/", payment_verify, name="payment_verify"),
-    path("cancel-appointment/<int:id>/",cancel_appointment,name="cancel_appointment"),
-    path("invoice/<int:appointment_id>/",download_invoice, name="download_invoice"),
+    path('contact/', contact, name='contact'),
+    path('contact_view/', contact_view, name='contact_view'),
+    path('newsletter_signup/', newsletter_signup, name='newsletter_signup'),
 
-    path('logout_patient/', custom_logout, name='logout_patient'),
-    path("doctor_dashboard/",doctor_dashboard, name="doctor_dashboard"),
-    path("admin/dashboard/", admin_dashboard, name="admin_dashboard"),
-    path("admin_patients/", admin_patients, name="admin_patients"),
+    # ── Department Detail Pages ───────────────────────────────────────────
+    path('cardiology/', cardiology, name='cardiology'),
+    path('neurology/', neurology, name='neurology'),
+    path('orthopaedics/', orthopaedics, name='orthopaedics'),
+    path('booking/', booking, name='booking'),
 
-    path("edit_patient/<int:id>/", edit_patient, name="edit_patient"),
-    path("delete_patient/<int:id>/", delete_patient, name="delete_patient"),
-    path("admin_add_patient/",admin_add_patient,name='admin_add_patient'),
-    path("admin_logout/",admin_logout, name="admin_logout"),
-  
+    # ── Authentication ────────────────────────────────────────────────────
+    path('login/', login, name='login'),
+    path('login/<str:role>/', role_login, name='role_login'),
+    path('new_patient_register/', new_patient_register, name='new_patient_register'),
+    path('logout/', custom_logout, name='logout_patient'),
+    path('logout_doctor/', doctor_logout, name='logout_doctor'),
 
-    # DOCTOR
-    path("admin_doctors/",admin_doctors, name="admin_doctors"),
-    path("admin_add_doctor/",admin_add_doctor, name="admin_add_doctor"),
-    path("save_doctor/",save_doctor, name="save_doctor"),
-    path("edit_doctor/<int:id>/",edit_doctor, name="edit_doctor"),
-    path("delete_doctor/<int:id>/",delete_doctor, name="delete_doctor"),
+    # ── Patient Dashboard ─────────────────────────────────────────────────
+    path('patient_dashboard/', patient_dashboard, name='patient_dashboard'),
+    path('payment-verify/', payment_verify, name='payment_verify'),
+    path('cancel-appointment/<int:id>/', cancel_appointment, name='cancel_appointment'),
+    path('invoice/<int:appointment_id>/', download_invoice, name='download_invoice'),
 
-    # # MASS MESSAGE
-    # path("admin/messages/", views.mass_message, name="mass_message"),
+    # Patient subpages
+    path('patient/medical-reports/', medical_reports, name='medical_reports'),
+    path('patient/video-call/', video_call, name='video_call'),
+    path('patient/notifications/', notifications, name='notifications'),
+    path('patient/progress/', medical_progress, name='medical_progress'),
+    path('patient/health/', medical_health, name='medical_health'),
 
-    # # QUERIES
-    # path("admin/queries/patient/", views.patient_queries, name="patient_queries"),
-    # path("admin/queries/doctor/", views.doctor_queries, name="doctor_queries"),
+    # ── Doctor Dashboard ──────────────────────────────────────────────────
+    path('doctor_dashboard/', doctor_dashboard, name='doctor_dashboard'),
 
+    # ── Admin Portal ──────────────────────────────────────────────────────
+    path('admin/dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('admin/patients/', admin_patients, name='admin_patients'),
+    path('admin/patients/add/', admin_add_patient, name='admin_add_patient'),
+    path('admin/patients/edit/<int:id>/', edit_patient, name='edit_patient'),
+    path('admin/patients/delete/<int:id>/', delete_patient, name='delete_patient'),
+    path('admin/logout/', admin_logout, name='admin_logout'),
+    path('admin/queries/', admin_queries, name='admin_queries'),
 
-    # urls.py
+    path('admin/doctors/', admin_doctors, name='admin_doctors'),
+    path('admin/doctors/add/', admin_add_doctor, name='admin_add_doctor'),
+    path('admin/doctors/save/', save_doctor, name='save_doctor'),
+    path('admin/doctors/edit/<int:id>/', edit_doctor, name='edit_doctor'),
+    path('admin/doctors/delete/<int:id>/', delete_doctor, name='delete_doctor'),
 
-    path('patient/medical-reports/',medical_reports, name='medical_reports'),
-
-    path('patient/video-call/',video_call, name='video_call'),
-    path('patient/notifications/',notifications, name='notifications'),
-    path('patient/progress/',medical_progress, name='medical_progress'),
-    path('patient/health/',medical_health, name='medical_health'),
-
-
+    # Legacy URL aliases for backward compatibility
+    path('admin_patients/', admin_patients, name='admin_patients_legacy'),
+    path('admin_add_patient/', admin_add_patient, name='admin_add_patient_legacy'),
+    path('edit_patient/<int:id>/', edit_patient, name='edit_patient_legacy'),
+    path('delete_patient/<int:id>/', delete_patient, name='delete_patient_legacy'),
+    path('admin_logout/', admin_logout, name='admin_logout_legacy'),
+    path('admin_doctors/', admin_doctors, name='admin_doctors_legacy'),
+    path('admin_add_doctor/', admin_add_doctor, name='admin_add_doctor_legacy'),
+    path('save_doctor/', save_doctor, name='save_doctor_legacy'),
+    path('edit_doctor/<int:id>/', edit_doctor, name='edit_doctor_legacy'),
+    path('delete_doctor/<int:id>/', delete_doctor, name='delete_doctor_legacy'),
 ]
+
+# Serve media files in development
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

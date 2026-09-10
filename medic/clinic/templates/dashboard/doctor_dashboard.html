@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Doctor Dashboard | Medical Clinic</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-Avb2QiuDEEvB4bZJYdab/2wNjy5zM5aSFpJwSs5vd6M3Z3FhsPpBIWEuS5SGBE/5EQ5b6wd7tOLJ5W/hSdEQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="{% static 'css/doctor_dash.css' %}">
 </head>
 <body>
@@ -17,41 +21,47 @@
             <span class="medical">Medical</span>
             <span class="clinic">Clinic</span>
         </div>
-        <div class="nav-subtitle">Exams & Diagnostics</div>
+        <div class="nav-subtitle">Exams &amp; Diagnostics</div>
     </div>
     <ul class="nav-links">
-        <li><a href="?page=appointments">Appointments</a></li>
-        <li><a href="?page=calls">Call Requests</a></li>
-        <li><a href="?page=prescriptions">Prescription Queries</a></li>
-        <li><a href="?page=emergency">Emergency</a></li>
+        <li><a href="?page=appointments"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+        <li><a href="?page=calls"><i class="fas fa-video"></i> Call Requests</a></li>
+        <li><a href="?page=prescriptions"><i class="fas fa-prescription-bottle-medical"></i> Prescriptions</a></li>
+        <li><a href="?page=emergency"><i class="fas fa-ambulance"></i> Emergency</a></li>
     </ul>
 
     <div class="nav-actions">
-        
-        <a href="{% url 'admin_logout' %}">Logout</a>
-        <a href="?page=notifications">🔔</a>
-
+        <!-- Fixed: was pointing to admin_logout, now correctly points to doctor logout -->
+        <a href="{% url 'logout_doctor' %}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="?page=notifications" class="notif-bell" title="Notifications" style="position: relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_notifications_count > 0 %}
+            <span style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; border-radius: 9999px; padding: 2px 6px; min-width: 16px; text-align: center;">
+                {{ unread_notifications_count }}
+            </span>
+            {% endif %}
+        </a>
     </div>
 
     <div class="mobile-actions">
-    <span class="menu-toggle">☰</span>
-    <span class="profile-toggle">👤</span>
-</div>
+        <span class="menu-toggle"><i class="fas fa-bars"></i></span>
+        <span class="profile-toggle"><i class="fas fa-user-circle"></i></span>
+    </div>
 </nav>
 
 <div class="doctor-wrapper">
 
     <!-- ===== LEFT SIDEBAR ===== -->
     <aside class="left-sidebar">
-        <a href="?page=home">Dashboard</a>
-        <a href="?page=patients">My Patients</a>
-        <a href="?page=messages">Messages</a>
+        <a href="?page=home"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="?page=patients"><i class="fas fa-users"></i> My Patients</a>
+        <a href="?page=messages"><i class="fas fa-envelope"></i> Messages</a>
     </aside>
 
     <!-- ===== MAIN CONTENT ===== -->
     <main class="doctor-content">
 
-        <!-- MESSAGES -->
+        <!-- FLASH MESSAGES -->
         {% if messages %}
         <div class="flash-messages" id="flash-messages">
             {% for message in messages %}
@@ -60,252 +70,333 @@
         </div>
         {% endif %}
 
-{% if not doctor.is_profile_completed and not request.session.skip_profile %}
+        {% if not doctor.is_profile_completed and not request.session.skip_profile %}
 
-<div class="form-card">
-    <h2 class="dashboard-title">Complete Your Profile</h2>
+        <div class="form-card">
+            <h2 class="dashboard-title">Complete Your Profile</h2>
 
-    <form class="doctor-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+            <form class="doctor-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile" value="1">
+                <textarea name="bio" placeholder="Professional Bio"></textarea>
+                <input type="text" name="qualification" placeholder="Qualification">
+                <input type="text" name="hobbies" placeholder="Hobbies">
+                <input type="file" name="image" accept="image/*">
 
-        <textarea name="bio" placeholder="Professional Bio"></textarea>
-        <input type="text" name="qualification" placeholder="Qualification">
-        <input type="text" name="hobbies" placeholder="Hobbies">
-        <input type="file" name="image">
-
-        <div class="form-actions">
-            <button type="submit">Save Profile</button>
-
-            <!-- ✅ SKIP BUTTON -->
-         <a href="?page=home&skip=true" class="skip-btn">Skip for now</a>
+                <div class="form-actions">
+                    <button type="submit">Save Profile</button>
+                    <a href="?page=home&skip=true" class="skip-btn">Skip for now</a>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
 
-{% else %}
-
-    {% if page == "home" %}
-        <h2>Welcome Dr. {{ doctor.name }}</h2>
-        <p>Specialization: {{ doctor.specialization }}</p>
-    {% endif %}
-
-{% endif %}
-
-
-{% if page == "appointments" %}
-
-<h2 class="section-title">Upcoming Appointments</h2>
-
-<div class="appointments-grid">
-
-{% for appt in appointments %}
-
-<div class="appointment-card">
-
-    <!-- PATIENT IMAGE -->
-    <div class="patient-avatar">
-        {% if appt.patient.profile_image %}
-            <img src="{{ appt.patient.profile_image.url }}">
         {% else %}
-            <img src="{% static 'img/default-user.png' %}">
+
+            {% if page == "home" %}
+            <div class="welcome-card">
+                <h2><i class="fas fa-stethoscope"></i> Welcome, Dr. {{ doctor.name }}</h2>
+                <p>Specialization: <strong>{{ doctor.specialization }}</strong></p>
+                <p>Today's date: <strong>{% now "j F Y" %}</strong></p>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>{{ appointments|length }}</span>
+                        <small>Total Appointments</small>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-check"></i>
+                        <span>{{ appointments|length }}</span>
+                        <small>Active Patients</small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
         {% endif %}
-    </div>
 
-    <!-- PATIENT INFO -->
-    <div class="patient-info">
-        <h3>{{ appt.first_name }} {{ appt.last_name }}</h3>
+        {% if page == "appointments" %}
+        <h2 class="section-title">Upcoming Appointments</h2>
 
-        <p class="meta">
-            <span>{{ appt.patient.gender }}</span>
-            <span>•</span>
-            <span>{{ appt.patient.age }} yrs</span>
-        </p>
+        <div class="appointments-grid">
+            {% for appt in appointments %}
+            <div class="appointment-card">
 
-        <p class="message">
-            {{ appt.message|default:"No message provided by patient." }}
-        </p>
+                <!-- PATIENT IMAGE — uses safe get_image_url helper -->
+                <div class="patient-avatar">
+                    <img src="{{ appt.patient.get_image_url }}" alt="{{ appt.patient.name }}">
+                </div>
 
-        <div class="appointment-meta">
-            <span>📅 {{ appt.date }}</span>
-            <span>⏰ {{ appt.time }}</span>
+                <!-- PATIENT INFO -->
+                <div class="patient-info">
+                    <h3>{{ appt.first_name }} {{ appt.last_name }}</h3>
+
+                    <p class="meta">
+                        <span>{{ appt.patient.gender }}</span>
+                        <span>•</span>
+                        <span>{{ appt.patient.age }} yrs</span>
+                    </p>
+
+                    <p class="message">{{ appt.message|default:"No message provided by patient." }}</p>
+
+                    <div class="appointment-meta">
+                        <span><i class="fas fa-calendar"></i> {{ appt.date }}</span>
+                        <span><i class="fas fa-clock"></i> {{ appt.time }}</span>
+                    </div>
+                </div>
+
+                <!-- STATUS & DOCTOR ACTIONS -->
+                <div class="status-box" style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+                    <span class="status {% if appt.status == 'Confirmed' %}confirmed{% elif appt.status == 'Completed' %}completed{% elif appt.status == 'Rejected' %}cancelled{% else %}cancelled{% endif %}">
+                        {{ appt.status }}
+                    </span>
+
+                    {% if appt.status != 'Completed' and appt.status != 'Cancelled' and appt.status != 'Rejected' %}
+                    <div style="display:flex; gap:6px; margin-top:5px;">
+                        <form method="POST" style="margin:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="appointment_id" value="{{ appt.id }}">
+                            <button type="submit" name="accept_appointment" class="save-btn" style="padding:5px 10px; font-size:12px; background:#16a34a; border:none; border-radius:4px; color:white; cursor:pointer;" title="Confirm Appointment">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                        </form>
+                        <form method="POST" style="margin:0;" onsubmit="return confirm('Reject this appointment?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="appointment_id" value="{{ appt.id }}">
+                            <button type="submit" name="reject_appointment" class="end-chat-btn" style="padding:5px 10px; font-size:12px; background:#dc2626; border:none; border-radius:4px; color:white; cursor:pointer;" title="Reject Appointment">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times fa-3x"></i>
+                <p>No appointments yet.</p>
+            </div>
+            {% endfor %}
         </div>
-    </div>
+        {% endif %}
 
-    <!-- STATUS -->
-    <div class="status-box">
-        <span class="status confirmed">{{ appt.status }}</span>
-    </div>
+        {% if page == "prescriptions" %}
+        <div class="prescription-section">
+            <h2 class="section-title">Prescription Queries</h2>
 
-</div>
+            {% for appt in appointments %}
+            <div class="patient-card">
+                <img src="{{ appt.patient.get_image_url }}" alt="{{ appt.patient.name }}">
+                <h3>{{ appt.patient.name }}</h3>
+                <p>{{ appt.patient.email }}</p>
+                <p class="appt"><i class="fas fa-calendar"></i> {{ appt.date }} | <i class="fas fa-clock"></i> {{ appt.time }}</p>
 
-{% empty %}
-<p>No appointments yet</p>
+                <!-- Prescription save form -->
+                <form method="POST" enctype="multipart/form-data" class="prescription-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="appointment_id" value="{{ appt.id }}">
+                    <textarea name="prescription_notes" placeholder="Add prescription notes..." rows="3">{{ appt.prescription_notes }}</textarea>
+                    <input type="file" name="prescription_file" accept=".pdf,image/*">
+                    <button type="submit" name="save_prescription" class="save-btn"><i class="fas fa-save"></i> Save Prescription</button>
+                </form>
 
-{% endfor %}
-</div>
-
-{% endif %}
-{% if page == "prescriptions" %}
-<div class="prescription-section">
-    <h2 class="section-title">Prescription Section</h2>
-
-    {% for appt in appointments %}
-    <div class="patient-card">
-    {% if appt.patient.image %}
-    <img src="{{ appt.patient.image.url }}" alt="{{ appt.patient.name }}">
-     {% else %}
-    <img src="{% static 'images/d1.png' %}" alt="Default Patient">
-    {% endif %}
-        <h3>{{ appt.patient.name }}</h3>
-        <p>{{ appt.patient.email }}</p>
-        <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
-
-        <a href="{% url 'doctor_dashboard' %}?page=prescriptions&open_chat_id={{ appt.id }}" class="chat-btn">
-            💬 Message
-        </a>
-    </div>
-    {% endfor %}
-</div>
-
-{% if chat_appointment %}
-<div class="chat-wrapper">
-    <div class="chat-header">
-        {% load static %}
-
-    {% if chat_appointment.patient.image %}
-    <img src="{{ chat_appointment.patient.image.url }}" alt="{{ chat_appointment.patient.name }}">
-    {% else %}
-    <img src="{% static 'images/default-user.png' %}" alt="Default User">
-    {% endif %}
-
-        <div>
-            <h3>{{ chat_appointment.patient.name }}</h3>
-            <small>{{ chat_appointment.patient.email }}</small>
+                <a href="{% url 'doctor_dashboard' %}?page=prescriptions&open_chat_id={{ appt.id }}" class="chat-btn">
+                    <i class="fas fa-comment-medical"></i> Message
+                </a>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-prescription fa-3x"></i>
+                <p>No prescription queries at this time.</p>
+            </div>
+            {% endfor %}
         </div>
-    </div>
 
-    <div class="chat-box">
-        {% for msg in messages %}
-        <div class="msg {{ msg.sender }}">
-            {{ msg.message }}
-            <span>{{ msg.created_at|time:"H:i" }}</span>
+        {% if chat_appointment %}
+        <div class="chat-wrapper">
+            <div class="chat-header">
+                <img src="{{ chat_appointment.patient.get_image_url }}" alt="{{ chat_appointment.patient.name }}">
+                <div>
+                    <h3>{{ chat_appointment.patient.name }}</h3>
+                    <small>{{ chat_appointment.patient.email }}</small>
+                </div>
+            </div>
+
+            <div class="chat-box">
+                {% for msg in chat_messages %}
+                <div class="msg {{ msg.sender }}">
+                    {{ msg.message }}
+                    <span>{{ msg.created_at|time:"H:i" }}</span>
+                </div>
+                {% empty %}
+                <div class="msg system">No messages yet. Start the conversation!</div>
+                {% endfor %}
+            </div>
+
+            <form method="POST" class="chat-input">
+                {% csrf_token %}
+                <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
+                <input type="text" name="message" placeholder="Type your message..." required>
+                <button type="submit" name="send_message"><i class="fas fa-paper-plane"></i> Send</button>
+            </form>
+
+            <form method="POST" style="margin-top: 10px;">
+                {% csrf_token %}
+                <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
+                <button type="submit" name="end_chat" class="end-chat-btn"><i class="fas fa-times-circle"></i> End Chat</button>
+            </form>
         </div>
-        {% empty %}
-        <div class="msg system">No messages yet. Start the conversation!</div>
-        {% endfor %}
-    </div>
+        {% endif %}
+        {% endif %}
 
-    <form method="POST" class="chat-input">
-        {% csrf_token %}
-        <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
-        <input type="text" name="message" placeholder="Type your message..." required>
-        <button type="submit" name="send_message">Send</button>
-    </form>
+        {% if page == "edit_profile" %}
+        <div class="form-card">
+            <h2 class="dashboard-title">Edit Profile</h2>
 
-    <form method="POST" style="margin-top: 10px;">
-        {% csrf_token %}
-        <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
-        <button type="submit" name="end_chat" class="end-chat-btn">End Chat</button>
-    </form>
-</div>
-{% endif %}
-{% endif %}
+            <form class="doctor-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile" value="1">
+                <textarea name="bio" placeholder="Professional Bio">{{ doctor.bio }}</textarea>
+                <!-- Fixed: was broken HTML with mismatched quotes -->
+                <input type="text" name="qualification" placeholder="Qualification" value="{{ doctor.qualification }}">
+                <input type="text" name="hobbies" placeholder="Hobbies" value="{{ doctor.hobbies }}">
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+        {% endif %}
 
+        {% if page == "notifications" %}
+        <div class="notifications-section">
+            <h2 class="section-title"><i class="fas fa-bell"></i> Notifications</h2>
+            {% if doctor_notifications %}
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+                {% for notif in doctor_notifications %}
+                <div style="background: white; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                        <h4 style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">{{ notif.title }}</h4>
+                        <span style="font-size: 12px; color: #64748b;">{{ notif.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <p style="margin: 0 0 10px 0; font-size: 13px; color: #475569; line-height: 1.5;">{{ notif.message }}</p>
+                    {% if notif.link %}
+                    <a href="{{ notif.link }}" style="font-size: 13px; color: #0284c7; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                        View Details <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-bell-slash fa-3x"></i>
+                <p>No new notifications.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
 
- {% if page == "edit_profile" %}
+        {% if page == "calls" %}
+        <div class="calls-section">
+            <h2><i class="fas fa-video"></i> Call Requests</h2>
+            <div class="empty-state">
+                <i class="fas fa-video-slash fa-3x"></i>
+                <p>No active call requests at this time.</p>
+            </div>
+        </div>
+        {% endif %}
 
-<div class="form-card">
-    <h2 class="dashboard-title">Edit Profile</h2>
+        {% if page == "emergency" %}
+        <div class="emergency-section">
+            <h2><i class="fas fa-ambulance"></i> Emergency Cases</h2>
+            <div class="empty-state">
+                <i class="fas fa-heartbeat fa-3x"></i>
+                <p>No emergency cases flagged at this time.</p>
+            </div>
+        </div>
+        {% endif %}
 
-    <form class="doctor-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <textarea name="bio">{{ doctor.bio }}</textarea>
-        <input type="text" name="qualification" placeholder=""Qualification value="{{ doctor.qualification }}">
-        <input type="text" name="hobbies" placeholder="Hobbies" value="{{ doctor.hobbies }}">
-        <input type="file" name="image">
-        <button type="submit">Update Profile</button>
-    </form>
-</div>
-
-
-{% endif %}
-
-{% if page == "notifications" %}
-<h2>Notifications</h2>
-<p>No new notifications</p>
-{% endif %}
-
-
+        {% if page == "patients" %}
+        <div class="patients-section">
+            <h2><i class="fas fa-users"></i> My Patients</h2>
+            {% if appointments %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Age</th>
+                        <th>Last Visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td><img src="{{ appt.patient.get_image_url }}" alt="{{ appt.patient.name }}" class="table-avatar"></td>
+                    <td>{{ appt.patient.name }}</td>
+                    <td>{{ appt.patient.email }}</td>
+                    <td>{{ appt.patient.gender }}</td>
+                    <td>{{ appt.patient.age }}</td>
+                    <td>{{ appt.date }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-user-times fa-3x"></i>
+                <p>No patients assigned yet.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
 
     </main>
 
     <!-- ===== RIGHT PROFILE SIDEBAR ===== -->
     <aside class="profile-sidebar">
-        <img src="{{ doctor.image.url }}" class="profile-pic">
-        <a href="?page=edit_profile">Edit Profile</a>
+        <img src="{{ doctor.get_image_url }}" class="profile-pic" alt="Dr. {{ doctor.name }}">
+        <a href="?page=edit_profile" class="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</a>
 
         <h3>Dr. {{ doctor.name }}</h3>
         <p>{{ doctor.specialization }}</p>
         <p>{{ doctor.email }}</p>
         <div class="profile-info">
-    <p><span>Bio:</span> {{ doctor.bio }}</p>
-    <p><span>Qualification:</span> {{ doctor.qualification }}</p>
-    <p><span>Hobbies:</span> {{ doctor.hobbies }}</p>
-    </div>
-
+            <p><span>Bio:</span> {{ doctor.bio|default:"Not set." }}</p>
+            <p><span>Qualification:</span> {{ doctor.qualification|default:"Not set." }}</p>
+            <p><span>Hobbies:</span> {{ doctor.hobbies|default:"Not set." }}</p>
+        </div>
 
         <hr>
-
-        <a href="?page=help">Help</a>
-        <a href="?page=contact">Contact Admin</a>
-        <a href="?page=settings">Settings</a>
+        <a href="?page=help"><i class="fas fa-question-circle"></i> Help</a>
+        <a href="?page=contact"><i class="fas fa-envelope"></i> Contact Admin</a>
+        <a href="?page=settings"><i class="fas fa-cog"></i> Settings</a>
     </aside>
 
 </div>
 
-<!-- NOTIFICATION PANEL -->
-{% comment %} <div id="notification-panel" class="notification-panel">
-    <h4>Notifications</h4>
-    <p>No new notifications</p>
-</div> {% endcomment %}
-  
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const flashMessages = document.getElementById("flash-messages");
-
-    if (!flashMessages) return;
-
-    // show fully first
-    flashMessages.style.opacity = "1";
-
-    // wait 5 seconds AFTER page load
-    setTimeout(() => {
-        flashMessages.style.transition = "opacity 0.6s ease";
-        flashMessages.style.opacity = "0";
-
-        setTimeout(() => {
-            flashMessages.remove();
-        }, 600);
-    }, 5000);
+    if (flashMessages) {
+        setTimeout(function () {
+            flashMessages.style.transition = "opacity 0.6s ease";
+            flashMessages.style.opacity = "0";
+            setTimeout(function () { flashMessages.remove(); }, 600);
+        }, 5000);
+    }
 });
 
-
-
-{% comment %} toogle {% endcomment %}
-
-document.querySelector(".menu-toggle").onclick = () => {
+document.querySelector(".menu-toggle").onclick = function () {
     document.querySelector(".left-sidebar").classList.toggle("active");
 };
 
-document.querySelector(".profile-toggle").onclick = () => {
+document.querySelector(".profile-toggle").onclick = function () {
     document.querySelector(".profile-sidebar").classList.toggle("active");
 };
-
-
 </script>
 
-
 </body>
-
 </html>

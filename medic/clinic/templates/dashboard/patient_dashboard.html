@@ -1,8 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Patient Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard | Medical Clinic</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-Avb2QiuDEEvB4bZJYdab/2wNjy5zM5aSFpJwSs5vd6M3Z3FhsPpBIWEuS5SGBE/5EQ5b6wd7tOLJ5W/hSdEQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="{% static 'css/patient_dashboard.css' %}">
 </head>
 <body>
@@ -14,33 +20,31 @@
             <span class="medical">Medical</span>
             <span class="clinic">Clinic</span>
         </div>
-        <div class="nav-subtitle">Exams & Diagnostics</div>
+        <div class="nav-subtitle">Exams &amp; Diagnostics</div>
     </div>
     <div class="nav-center">
-    <a href="{% url 'patient_dashboard' %}?page=book">📅 Book Appointments</a>
-    <a href="{% url 'patient_dashboard' %}?page=appointments">📅⏳ Appointments</a>    
-     <div class="nav-dropdown">
-        <a href="#" class="dropdown-btn">🩺 Specialization ▾</a>
-
-        <div class="dropdown-menu">
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Cardiologist">❤️ Cardiologist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dermatologist">🧴 Dermatologist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Orthopaedics">🦴 Orthopaedics</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Pediatrician">👶 Pediatrician</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Opthalmologist">👁️ Opthalmologist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dentist">🦷 Dentist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Nephrologist">🧬 Nephrologist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Surgeon">🔪 Surgeon</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Oncologist">🎗️ Oncologist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Psychiatrist">🧠 Psychiatrist</a>
-    <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Gynaecologist">🤰 Gynaecologist</a>
-</div>
-
-    </div>
+        <a href="{% url 'patient_dashboard' %}?page=book"><i class="fas fa-calendar-plus"></i> Book Appointments</a>
+        <a href="{% url 'patient_dashboard' %}?page=appointments"><i class="fas fa-calendar-check"></i> My Appointments</a>    
+        <div class="nav-dropdown">
+            <a href="#" class="dropdown-btn"><i class="fas fa-user-md"></i> Specialization ▾</a>
+            <div class="dropdown-menu">
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Cardiologist">❤️ Cardiologist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dermatologist">🧴 Dermatologist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Orthopaedics">🦴 Orthopaedics</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Pediatrician">👶 Pediatrician</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Opthalmologist">👁️ Opthalmologist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Dentist">🦷 Dentist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Nephrologist">🧬 Nephrologist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Surgeon">🔪 Surgeon</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Oncologist">🎗️ Oncologist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Psychiatrist">🧠 Psychiatrist</a>
+                <a href="{% url 'patient_dashboard' %}?page=specialization&specialization=Gynaecologist">🤰 Gynaecologist</a>
+            </div>
+        </div>
     </div>
 
     <div class="nav-right">
-        <a href="{% url 'logout_patient' %}" class="logout-btn">🚪 Logout</a>
+        <a href="{% url 'logout_patient' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 </header>
 
@@ -49,32 +53,33 @@
     <!-- LEFT PROFILE BAR -->
     <aside class="profile-bar">
         <div class="profile-header">
-    <div class="profile-img-wrapper">
-     {% if patient.image %}
-    <img src="{{ patient.image.url }}" class="profile-img">
-    {% else %}
-     <img src="{% static 'images/default-user.png' %}" class="profile-img">
-     {% endif %}
-    </div>
+            <div class="profile-img-wrapper">
+                <img src="{{ patient.get_image_url }}" class="profile-img" alt="{{ patient.name }}">
+            </div>
 
-    <h3 class="patient-name">{{ patient.name }}</h3>
+            <h3 class="patient-name">{{ patient.name }}</h3>
 
-    <div class="patient-meta">
-        <span>🎂 {{ patient.age }} yrs</span>
-        <span>⚧ {{ patient.gender }}</span>
-    </div>
-
-    {% comment %} <div class="patient-contact">
-        📞 {{ patient.contact }}
-     </div> {% endcomment %}
-    </div>
-        <a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a>
-        <a href="{% url 'notifications' %}">🔔 Notifications</a>
-        <a href="{% url 'medical_reports' %}">📄 Medical Reports</a>
-        <a href="/patient_dashboard/?page=p_queries">💬  Prescription Queries</a>
-        <a href="{% url 'video_call' %}">🎥 Video Call</a>
-        <a href="{% url 'medical_progress' %}">📊 Health Progress</a>
-        <a href="{% url 'medical_health' %}">🥗 Medical Health</a>
+            <div class="patient-meta">
+                <span>🎂 {{ patient.age }} yrs</span>
+                <span>⚧ {{ patient.gender }}</span>
+            </div>
+            {% if patient.mobile %}
+            <div class="patient-contact">
+                <small><i class="fas fa-phone"></i> {{ patient.mobile }}</small>
+            </div>
+            {% endif %}
+            <div style="margin-top: 10px;">
+                <a href="{% url 'patient_dashboard' %}?page=profile" style="font-size: 12px; padding: 4px 10px; background: rgba(255,255,255,0.9); border-radius: 6px; text-decoration: none; color: #0284c7; font-weight: bold;"><i class="fas fa-user-edit"></i> Edit Profile</a>
+            </div>
+        </div>
+        <a href="{% url 'patient_dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{% url 'patient_dashboard' %}?page=profile"><i class="fas fa-user"></i> My Profile</a>
+        <a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="{% url 'medical_reports' %}"><i class="fas fa-file-medical"></i> Medical Reports</a>
+        <a href="{% url 'patient_dashboard' %}?page=p_queries"><i class="fas fa-comments"></i> Prescription Queries</a>
+        <a href="{% url 'video_call' %}"><i class="fas fa-video"></i> Video Call</a>
+        <a href="{% url 'medical_progress' %}"><i class="fas fa-chart-line"></i> Health Progress</a>
+        <a href="{% url 'medical_health' %}"><i class="fas fa-heartbeat"></i> Medical Health</a>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -88,515 +93,700 @@
         </div>
         {% endif %}
 
-
         {% if section == 'dashboard' %}
-         <div class="content-card">
-        <h2>Welcome {{ patient.name }} 👋</h2>  <br>
-        <p>We Hope You Are In Good Health & Happyness</p>
+        <div class="content-card">
+            <h2>Welcome back, {{ patient.name }} 👋</h2>
+            <p>Access your healthcare summary, upcoming appointments, and clinical consultations.</p>
+
+            <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 18px; border-radius: 8px;">
+                    <h4 style="margin:0; font-size: 28px; color: #0284c7;">{{ upcoming_count|default:0 }}</h4>
+                    <p style="margin:4px 0 0; color: #475569; font-weight: 600;"><i class="fas fa-calendar-check"></i> Upcoming Visits</p>
+                </div>
+                <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px; border-radius: 8px;">
+                    <h4 style="margin:0; font-size: 28px; color: #16a34a;">{{ past_count|default:0 }}</h4>
+                    <p style="margin:4px 0 0; color: #475569; font-weight: 600;"><i class="fas fa-history"></i> Completed/Past Visits</p>
+                </div>
+            </div>
+
+            {% if upcoming_preview %}
+            <h3 style="margin-top: 30px; font-size: 17px; color: #0f172a;"><i class="fas fa-clock"></i> Next Scheduled Appointment</h3>
+            <div style="margin-top: 10px;">
+                {% for appt in upcoming_preview %}
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:10px;">
+                    <div>
+                        <strong style="color:#0f172a;">Dr. {{ appt.doctor.name }}</strong> ({{ appt.doctor.specialization }})<br>
+                        <small style="color:#64748b;">📅 {{ appt.date }} at {{ appt.time }}</small>
+                    </div>
+                    <a href="{% url 'patient_dashboard' %}?page=appointments" class="reschedule-btn" style="text-decoration:none; font-size:12px; padding:6px 12px;">Manage</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <a href="{% url 'patient_dashboard' %}?page=book" class="book-btn" style="text-decoration: none; padding: 12px 22px; width: auto; margin-top:0; border-radius:8px;">📅 Book New Appointment</a>
+                <a href="{% url 'patient_dashboard' %}?page=appointments" class="reschedule-btn" style="text-decoration: none; padding: 12px 22px; width: auto; border-radius:8px;">⏳ View Appointments</a>
+            </div>
+        </div>
+
+        {% elif section == 'profile' %}
+        <div class="content-card">
+            <h2><i class="fas fa-user-circle"></i> My Patient Profile</h2>
+            <p>Update your personal and contact details on file with the clinic.</p>
+
+            <form method="POST" enctype="multipart/form-data" style="margin-top: 20px; max-width: 600px;">
+                {% csrf_token %}
+                <div style="display:flex; gap:20px; align-items:center; margin-bottom: 20px;">
+                    <img src="{{ patient.get_image_url }}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid #0284c7;" alt="Avatar">
+                    <div>
+                        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Change Photo</label>
+                        <input type="file" name="image" accept="image/*" style="font-size:12px;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Full Name</label>
+                    <input type="text" name="name" value="{{ patient.name }}" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px;" required>
+                </div>
+
+                <div style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div style="flex:1;">
+                        <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Age</label>
+                        <input type="number" name="age" value="{{ patient.age }}" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px;" required>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Gender</label>
+                        <input type="text" value="{{ patient.gender }}" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f1f5f9; color:#64748b;" readonly>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Registered Email</label>
+                    <input type="email" value="{{ patient.email }}" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f1f5f9; color:#64748b;" readonly>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Contact Mobile</label>
+                    <input type="text" name="mobile" value="{{ patient.mobile }}" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px;">
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:5px;">Residential Address</label>
+                    <textarea name="address" rows="3" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px;">{{ patient.address }}</textarea>
+                </div>
+
+                <button type="submit" class="book-btn" style="width:auto; padding:12px 25px; margin-top:0; border-radius:8px;">Save Profile Changes</button>
+            </form>
         </div>
 
         {% elif section == 'book' %}
         <div class="content-card">
-         <h2>Book Appointment</h2>
+            <h2>Book Appointment</h2>
 
-<!-- SEARCH BAR -->
-        <form method="get" class="doctor-search" action="{% url 'patient_dashboard' %}">
-          <input type="hidden" name="page" value="book">
-     <input
-        type="text"
-        name="q"
-        placeholder="Search doctor by name / specialization..."
-        value="{{ query|default:'' }}" >
-    <button type="submit">🔍 Search</button>
-        </form>
+            <!-- SEARCH BAR -->
+            <form method="get" class="doctor-search" action="{% url 'patient_dashboard' %}">
+                <input type="hidden" name="page" value="book">
+                <input type="text" name="q" placeholder="Search doctor by name / specialization..." value="{{ query|default:'' }}">
+                <button type="submit">🔍 Search</button>
+            </form>
 
-<!-- DOCTOR LIST -->
-      <div class="doctor-grid">
-     {% for d in doctors %}
-     <div class="doctor-card">
+            <!-- DOCTOR LIST -->
+            <div class="doctor-grid">
+                {% for d in doctors %}
+                <div class="doctor-card">
+                    <div class="doctor-img">
+                        <img src="{{ d.get_image_url }}" alt="{{ d.name }}">
+                    </div>
 
-        <div class="doctor-img">
-            {% if d.image %}
-                <img src="{{ d.image.url }}">
-            {% else %}
-                <img src="{% static 'images/default-user.png' %}">
-            {% endif %}
+                    <h3>{{ d.name }}</h3>
+                    <p class="spec">Doctor of {{ d.specialization }}</p>
+                    <p class="exp">🧠 {{ d.experience }} Years Experience</p>
+                    <p class="about">{{ d.bio|truncatewords:18|default:"Experienced medical specialist dedicated to exceptional patient care." }}</p>
+
+                    <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}" class="book-btn">
+                        📅 Book Now
+                    </a>
+                </div>
+                {% empty %}
+                <p>No doctors found matching your criteria.</p>
+                {% endfor %}
+            </div>
+        </div>
+               
+        <!-- SPECIALIZATION -->
+        {% elif section == 'specialization' %}
+        <div class="content-card">
+            <h2>🩺 {{ selected_specialization }} Doctors Available</h2>
+
+            <div class="doctor-grid">
+                {% for d in doctors %}
+                <div class="doctor-card">
+                    <div class="doctor-img">
+                        <img src="{{ d.get_image_url }}" alt="{{ d.name }}">
+                    </div>
+
+                    <h3>{{ d.name }}</h3>
+                    <p class="spec">Doctor of {{ d.specialization }}</p>
+                    <p class="exp">🧠 {{ d.experience }} Years Experience</p>
+                    <p class="about">{{ d.bio|truncatewords:18|default:"Experienced specialist dedicated to patient wellness." }}</p>
+
+                    <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}" class="book-btn">
+                        📅 Book Now
+                    </a>
+                </div>
+                {% empty %}
+                <p>No doctors available for this specialization.</p>
+                {% endfor %}
+            </div>
         </div>
 
-        <h3>{{ d.name }}</h3>
-        <p class="spec">Doctor of {{ d.specialization }}</p>
-        <p class="exp">🧠 {{ d.experience }} Years Experience</p>
-         <p class="tagline">
-            {% if d.specialization == "Cardiologist" %}
-                ❤️ Doctor of Heart
-            {% elif d.specialization == "Dermatologist" %}
-                🧴 Skin Specialist
-            {% elif d.specialization == "Orthopaedics" %}
-                🦴 Bone & Joint Expert
-            {% elif d.specialization == "Pediatrician" %}
-                🧒 Doctor of Child
-            {% elif d.specialization == "Opthalmologist" %}
-                👀 Eyes Specialist
-            {% elif d.specialization == "Dentist" %}
-                🦷 Teeth & Dental Expert
-            {% elif d.specialization == "Nephrologist" %}
-                👩‍⚕️ Kidney Specialist
-            {% elif d.specialization == "Surgeon" %}
-                💉 Doctor of Surgery
-            {% elif d.specialization == "Oncologist" %}
-                👩‍⚕️ Doctor Of Cancer
-            {% elif d.specialization == "Psychiatrist" %}
-                🧠 Doctor of Mind
-            {% elif d.specialization == "Hepatologist" %}
-                🏥 Liver Specialist
-            {% elif d.specialization == "Gynaecologist" %}
-                👩🏻 Doctor of Women
-            {% elif d.specialization == "Gastroenterologists" %}
-                👨🏻‍⚕️ Doctor of Stomach
-            {% elif d.specialization == "Otolaryngologist" %}
-                👂 Ear Specialist
-            {% elif d.specialization == "Pulononologist" %}
-               🫁  Doctor of Lungs
-            {% else %}
-                🩺 Medical Specialist
-            {% endif %}  </p>
-        <p class="about">
-            {{ d.bio|truncatewords:18 }}
-        </p>
-
-        <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}"
-         class="book-btn">
-         📅 Book Now
-           </a>
-
-
-
-    </div>
-     {% empty %}
-        <p>No doctors found.</p>
-     {% endfor %}
-     </div>
-     </div>
-               
-<!--=====================>>>SPECIALIZATION<<<<================ -->
-            {% elif section == 'specialization' %}
-
-             <div class="content-card">
-              <h2>
-             🩺 {{ selected_specialization }} Doctors Available
-             </h2>
-
-             <div class="doctor-grid">
-             {% for d in doctors %}
-             <div class="doctor-card">
-
-             <div class="doctor-img">
-                {% if d.image %}
-                    <img src="{{ d.image.url }}">
-                {% else %}
-                    <img src="{% static 'images/default-user.png' %}">
-                {% endif %}
-              </div>
-
-              <h3>{{ d.name }}</h3>
-              <p class="spec">Doctor of {{ d.specialization }}</p>
-             <p class="exp">🧠 {{ d.experience }} Years Experience</p>
-
-             <p class="about">
-                {{ d.bio|truncatewords:18 }}
-             </p>
-
-             <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ d.id }}"
-               class="book-btn">
-             📅 Book Now
-              </a>
-
-
-             </div>
-               {% empty %}
-              <p>No doctors available for this specialization.</p>
-             {% endfor %}
-              </div>
-             </div>
-
-
-
-
-
         {% elif section == 'appointments' %}
-         <div class="appointments-wrapper">
-        <h2 class="appt-heading">Upcoming Appointments</h2>
+        <div class="appointments-wrapper">
+            <h2 class="appt-heading">Upcoming Appointments</h2>
 
-        {% for appt in upcoming_appointments %}
-          <div class="appt-card">
-         <img src="{{ appt.doctor.image.url }}" class="doctor-img">
+            {% for appt in upcoming_appointments %}
+            <div class="appt-card">
+                <img src="{{ appt.doctor.get_image_url }}" class="doctor-img" alt="{{ appt.doctor.name }}">
 
-         <div class="appt-info">
-           <h3>{{ appt.doctor.name }}</h3>
-           <p>{{ appt.doctor.specialization }}</p>
-           <p class="appt-time">
-            {{ appt.date }} | {{ appt.time }}
-          </p>
-          <span class="status confirmed">Confirmed</span>
-          {% if appt.is_paid %}
-          <a href="{% url 'download_invoice' appt.id %}" class="reschedule-btn">
-          📄 Download Invoice
-          </a>
-{% endif %}
+                <div class="appt-info">
+                    <h3>Dr. {{ appt.doctor.name }}</h3>
+                    <p>{{ appt.doctor.specialization }}</p>
+                    <p class="appt-time">
+                        📅 {{ appt.date }} | ⏰ {{ appt.time }}
+                    </p>
+                    <span class="status confirmed">{{ appt.status }}</span>
+                    {% if appt.is_paid %}
+                    <a href="{% url 'download_invoice' appt.id %}" class="reschedule-btn" style="margin-top: 5px; display: inline-block;">
+                        📄 Download Invoice
+                    </a>
+                    {% endif %}
+                </div>
 
-         </div>
+                <div class="appt-actions">
+                    <span class="status confirmed">Paid INR 300</span>
+                    <a href="?page=schedule&doctor_id={{ appt.doctor.id }}" class="reschedule-btn">
+                        Reschedule
+                    </a>
 
-        <div class="appt-actions">
-           <span class="status confirmed">Paid INR 300 </span>
-          <a href="?page=schedule&doctor_id={{ appt.doctor.id }}" class="reschedule-btn">
-            Reschedule
-           </a>
+                    <form method="POST" action="{% url 'cancel_appointment' appt.id %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                        {% csrf_token %}
+                        <button type="submit" class="cancel-btn" style="cursor:pointer; border:none;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: #666; padding: 10px;">No upcoming appointments scheduled.</p>
+            {% endfor %}
 
-          <a href="{% url 'cancel_appointment' appt.id %}" class="cancel-btn">
-             Cancel
-            </a>
-         </div>
-         </div>
-         {% empty %}
-         <p style="color: aliceblue; font-weight: bold;">No upcoming appointments</p>
-         {% endfor %}
+            <h2 class="appt-heading" style="margin-top: 30px;">Past Appointments</h2>
 
+            {% for appt in past_appointments %}
+            <div class="appt-card past">
+                <img src="{{ appt.doctor.get_image_url }}" class="doctor-img" alt="{{ appt.doctor.name }}">
 
-         <h2 class="appt-heading">Past Appointments</h2>
-
-         {% for appt in past_appointments %}
-         <div class="appt-card past">
-         <img src="{{ appt.doctor.image.url }}" class="doctor-img">
-
-         <div class="appt-info">
-         <h3>{{ appt.doctor.name }}</h3>
-         <p>{{ appt.doctor.specialization }}</p>
-         <p class="appt-time">
-            {{ appt.date }} | {{ appt.time }}
-         </p>
-         <span class="status cancelled">
-         {{ appt.status }}
-         </span>
-         </div>
-         </div>
-         {% empty %}
-         <p style="color: aliceblue; font-weight: bold;">No past appointments</p>
-         {% endfor %}
-         </div>
+                <div class="appt-info">
+                    <h3>Dr. {{ appt.doctor.name }}</h3>
+                    <p>{{ appt.doctor.specialization }}</p>
+                    <p class="appt-time">
+                        📅 {{ appt.date }} | ⏰ {{ appt.time }}
+                    </p>
+                    <span class="status {% if appt.status == 'Completed' %}confirmed{% else %}cancelled{% endif %}">
+                        {{ appt.status }}
+                    </span>
+                    {% if appt.prescription_notes or appt.prescription_file %}
+                    <div style="margin-top: 8px;">
+                        <strong>Prescription:</strong>
+                        {% if appt.prescription_notes %}<p>{{ appt.prescription_notes }}</p>{% endif %}
+                        {% if appt.prescription_file %}
+                            <a href="{{ appt.prescription_file.url }}" target="_blank" class="reschedule-btn">Download RX</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: #666; padding: 10px;">No past appointments found.</p>
+            {% endfor %}
+        </div>
 
         {% elif section == 'reports' %}
         <div class="content-card">
-        <h2>Medical Reports</h2>
-        <p>Lab reports & prescriptions.</p>
+            <h2>Medical Reports &amp; Prescriptions</h2>
+            <p>Access your official clinical reports, lab results, and doctor prescriptions.</p>
+            {% if appointments %}
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 2px solid #ddd; padding: 8px;">
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Prescription Notes</th>
+                            <th>File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in appointments %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px 5px;">{{ appt.date }}</td>
+                            <td style="padding: 10px 5px;">Dr. {{ appt.doctor.name }}</td>
+                            <td style="padding: 10px 5px;">{{ appt.prescription_notes|default:"No notes attached." }}</td>
+                            <td style="padding: 10px 5px;">
+                                {% if appt.prescription_file %}
+                                    <a href="{{ appt.prescription_file.url }}" target="_blank" style="color: #007bff;"><i class="fas fa-download"></i> View Report</a>
+                                {% else %}
+                                    <span style="color: #888;">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="margin-top: 15px; color: #777;">No medical reports found on file.</p>
+            {% endif %}
         </div>
 
         {% elif section == 'p_queries' %}
-       
-      <div class="query-grid">
+        <div class="query-grid">
+            {% for appt in appointments %}
+            <div class="doctor-card">
+                <img src="{{ appt.doctor.get_image_url }}" alt="Doctor Profile">
+                <h3>Dr. {{ appt.doctor.name }}</h3>
+                <p>{{ appt.doctor.specialization }}</p>
+                <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
 
-      {% for appt in appointments %}
-     <div class="doctor-card">
-    <img src="{{ appt.doctor.image.url|default:'/static/images/default-user.png' }}">
-
-    <h3>Dr. {{ appt.doctor.name }}</h3>
-    <p>{{ appt.doctor.specialization }}</p>
-    <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
-
-    <a href="{% url 'patient_dashboard' %}?page=chat&appointment_id={{ appt.id }}"
-       class="chat-btn">
-       💬 Message
-    </a>
-</div>
-{% endfor %}
-
-</div>
-
-
-{% elif section == "chat" and appointment %}
-<div class="chat-wrapper">
-
-    <!-- HEADER -->
-    <div class="chat-header">
-        <img src="{{ doctor.image.url }}" alt="Doctor Image">
-        <div class="chat-header-info">
-            <h3>Dr. {{ doctor.name }}</h3>
-            <small>{{ doctor.specialization }}</small>
+                <a href="{% url 'patient_dashboard' %}?page=chat&appointment_id={{ appt.id }}" class="chat-btn">
+                    💬 Message Doctor
+                </a>
+            </div>
+            {% empty %}
+            <div class="content-card" style="width: 100%;">
+                <p>No active consultations available to message. Book an appointment first.</p>
+            </div>
+            {% endfor %}
         </div>
-    </div>
 
-    <!-- CHAT BODY -->
-    <div class="chat-box">
-        {% for msg in messages %}
-        <div class="msg {{ msg.sender }}">
-            <p>{{ msg.message }}</p>
-            <span>{{ msg.created_at|time:"H:i" }}</span>
+        {% elif section == "chat" and appointment %}
+        <div class="chat-wrapper">
+            <!-- HEADER -->
+            <div class="chat-header">
+                <img src="{{ doctor.get_image_url }}" alt="Doctor Image">
+                <div class="chat-header-info">
+                    <h3>Dr. {{ doctor.name }}</h3>
+                    <small>{{ doctor.specialization }}</small>
+                </div>
+            </div>
+
+            <!-- CHAT BODY -->
+            <div class="chat-box">
+                {% for msg in chat_messages %}
+                <div class="msg {{ msg.sender }}">
+                    <p>{{ msg.message }}</p>
+                    <span>{{ msg.created_at|time:"H:i" }}</span>
+                </div>
+                {% empty %}
+                <p class="no-msg">No messages yet. Send a message to your doctor!</p>
+                {% endfor %}
+            </div>
+
+            <!-- INPUT FORM -->
+            <form method="POST" class="chat-input">
+                {% csrf_token %}
+                <input type="text" name="message" placeholder="Type your message..." required>
+                <button type="submit">Send</button>
+            </form>
         </div>
-        {% empty %}
-        <p class="no-msg">No messages yet. Say hello!</p>
-        {% endfor %}
-    </div>
-
-    <!-- INPUT FORM -->
-    <form method="POST" class="chat-input">
-        {% csrf_token %}
-        <input type="text" name="message" placeholder="Type your message..." required>
-        <button type="submit">Send</button>
-    </form>
-</div>
-
-
-
-
-
 
         {% elif section == 'video' %}
         <div class="content-card">
-        <h2>Live Video Call</h2>
-        <p>Start video consultation.</p>
+            <h2>Live Telehealth Consultation</h2>
+            <p>Connect securely with your assigned physician in high-definition video.</p>
+            <div style="background: #f8f9fa; border: 2px dashed #007bff; border-radius: 8px; padding: 40px; text-align: center; margin-top: 20px;">
+                <i class="fas fa-video fa-3x" style="color: #007bff; margin-bottom: 15px;"></i>
+                <h3>Virtual Waiting Room Ready</h3>
+                <p style="color: #666; max-width: 500px; margin: 10px auto;">Your doctor will launch the telehealth meeting link at your scheduled appointment time.</p>
+                <button class="book-btn" onclick="alert('Waiting room entered. Your doctor will admit you when ready.')" style="margin-top: 15px;">Enter Waiting Room</button>
+            </div>
         </div>
 
         {% elif section == 'notifications' %}
         <div class="content-card">
-        <h2>Notifications</h2>
-        <p>Appointment alerts & reminders.</p>
+            <h2><i class="fas fa-bell"></i> Notifications &amp; Reminders</h2>
+            <p>Recent alerts regarding your clinic appointments, doctor replies, and prescriptions.</p>
+            <div style="margin-top: 20px;">
+                {% for n in notifications_list %}
+                <div style="padding: 14px 16px; border-left: 4px solid #0284c7; background: #ffffff; margin-bottom: 12px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; border-left-width: 4px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <strong style="color: #0f172a; font-size: 15px;">{{ n.title }}</strong>
+                        <small style="color: #64748b;">{{ n.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <p style="margin: 6px 0 0; color: #475569; font-size: 13px;">{{ n.message }}</p>
+                    {% if n.link %}
+                    <a href="{{ n.link }}" style="display:inline-block; margin-top: 8px; font-size: 12px; color: #0284c7; font-weight: 600; text-decoration: underline;">
+                        View Details →
+                    </a>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 30px; color: #64748b;">
+                    <i class="fas fa-bell-slash fa-3x" style="color: #cbd5e1; margin-bottom: 10px;"></i>
+                    <p>No new notifications at this time.</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         {% elif section == 'progress' %}
         <div class="content-card">
-        <h2>Medical Progress</h2>
-        <p>Analytics of your health improvement.</p>
+            <h2>Health Progress Metrics</h2>
+            <p>Visual tracking of vitals and treatment milestones recorded by your clinical team.</p>
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="background: #eef7ff; padding: 15px; border-radius: 8px; text-align: center;">
+                    <h4>Blood Pressure</h4>
+                    <p style="font-size: 24px; font-weight: bold; color: #007bff;">120 / 80</p>
+                    <small style="color: #28a745;">Normal Range</small>
+                </div>
+                <div style="background: #eefcf4; padding: 15px; border-radius: 8px; text-align: center;">
+                    <h4>Heart Rate</h4>
+                    <p style="font-size: 24px; font-weight: bold; color: #28a745;">72 bpm</p>
+                    <small style="color: #28a745;">Resting Optimal</small>
+                </div>
+                <div style="background: #fff8ee; padding: 15px; border-radius: 8px; text-align: center;">
+                    <h4>BMI</h4>
+                    <p style="font-size: 24px; font-weight: bold; color: #ff9800;">22.4</p>
+                    <small style="color: #28a745;">Healthy Weight</small>
+                </div>
+            </div>
         </div>
 
         {% elif section == 'health' %}
         <div class="content-card">
-        <h2>Medical Health</h2>
-        <ul>
-            <li>🥗 Healthy Diet Plans</li>
-            <li>🏃 Daily Exercise Routines</li>
-            <li>🛌 Sleep Recommendations</li>
-        </ul>
+            <h2>Personalized Health &amp; Lifestyle Plan</h2>
+            <ul style="line-height: 2; margin-top: 15px;">
+                <li>🥗 <strong>Nutritional Guidance:</strong> Emphasize whole greens, lean proteins, and hydration (at least 2.5L daily).</li>
+                <li>🏃 <strong>Physical Activity:</strong> 30 minutes of moderate aerobic exercise 5 days a week.</li>
+                <li>🛌 <strong>Rest &amp; Sleep:</strong> Maintain 7–8 hours of consistent, uninterrupted sleep nightly.</li>
+                <li>💊 <strong>Medication Adherence:</strong> Take all prescribed medications strictly as scheduled.</li>
+            </ul>
         </div>
 
+        {% elif section == "schedule" %}
+        <div class="schedule-page-wrapper">
+            <a href="{% url 'patient_dashboard' %}?page=book" class="back-link" style="color: #007bff; font-weight: bold;">← Back to Doctors</a>
+            <h1 class="page-title" style="color:#333; font-weight: bold;">Schedule your service</h1>
+            <p class="page-subtitle" style="color: #666;">Check doctor availability and choose a time that fits your schedule.</p>
 
-{% elif section == "schedule" %}
+            <div class="schedule-card">
+                <!-- LEFT : CALENDAR -->
+                <div class="calendar-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0;"><i class="fas fa-calendar-alt"></i> Select Date</h3>
+                        <span style="font-size:12px; color:#0284c7; font-weight:600; background:#e0f2fe; padding:3px 8px; border-radius:12px;">Step 1 of 2</span>
+                    </div>
 
-<div class="schedule-page-wrapper">
+                    <div class="month-header">
+                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:-1 }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Previous Month">‹</a>
+                        <strong>{{ month_name }} {{ year }}</strong>
+                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:1 }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Next Month">›</a>
+                    </div>
 
-    <a href="{% url 'patient_dashboard' %}?page=book" class="back-link" style="color: red; font-weight: bolder;">← Back</a>
-         <h1 class="page-title" style="color:black; font-weight: bolder;">Schedule your service</h1>
-         <p class="page-subtitle" style="color: black; font-weight: bolder;">Check out our availability and book the date and time that works for you</p>
+                    <div class="weekdays">
+                        <span>Sun</span><span>Mon</span><span>Tue</span>
+                        <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
 
-           <div class="schedule-card">
-
-    <!-- LEFT : CALENDAR -->
-          <div class="calendar-box">
-           <h3>Select a Date and Time</h3>
-
-            <div class="month-header">
-              <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:-1 }}&year={{ year }}">‹</a>
-               <strong style="color: black;">{{ month_name }}/{{ year }}</strong>
-                <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:1 }}&year={{ year }}">›</a>
-              </div>
-
-              <div class="weekdays">
-               <span>Sun</span><span>Mon</span><span>Tue</span>
-                 <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-               </div>
-
-           <div class="calendar-grid">
-{% for week in month_days %}
-    {% for day in week %}
-        {% if day == 0 %}
-            <span class="empty"></span>
-        {% else %}
-            {# Build YYYY-MM-DD string for this day #}
-            {% with year|stringformat:"s" as y %}
-            {% with month|stringformat:"02d" as m %}
-            {% with day|stringformat:"02d" as d %}
-                {% with y|add:"-"|add:m|add:"-"|add:d as day_str %}
-                    <a href="?page=schedule&doctor_id={{ doctor.id }}&date={{ day_str }}"
-                       class="day-btn {% if selected_date == day_str %}selected{% endif %}">
-                        {{ day }}
-                    </a>
-                {% endwith %}
-            {% endwith %}
-            {% endwith %}
-            {% endwith %}
-        {% endif %}
-    {% endfor %}
-{% endfor %}
-</div>
-
-
-        </div>
-
-              <!-- MIDDLE : TIME SLOTS -->
-              <div class="slot-box">
-                  <h3>Availability</h3>
-
-                 <form method="post">
-                 {% csrf_token %}
-                 <input type="hidden" name="date" value="{{ selected_date }}">
-
-                    <div class="slots">
-                   {% for slot in time_slots %}
-                  <label class="slot">
-                         <input type="radio" name="time" value="{{ slot }}">
-                         {% if slot == selected_time %}checked{% endif %}>
-                      <span>{{ slot }}</span>
-                    </label>
-                    {% endfor %}
-                   </div>
-
-                  <button class="next-btn" type="submit">Next</button>
-
-                  </form>
-                  </div>
-
-              <!-- RIGHT : SERVICE DETAILS -->
-              <div class="service-box">
-              <h3>Service Details</h3>
-              <p><strong>Doctor:</strong> {{ doctor.name }}</p>
-               <p class="service">{{ doctor.specialization }}</p>
-                <p><strong>Date:</strong> {{ selected_date|default:"Not selected" }} 
-                <strong>Time:</strong> {{ selected_time|default:"Not selected" }}</p>
-              <p><strong>Medical Clinic</strong></p>
-             <p><strong>Duration:</strong> 1 Hour</p>
-             <p><strong>Booking Charge:</strong> ₹ 300.00</p>
-
-                {% if selected_date and selected_time %}
-                <a href="{% url 'patient_dashboard' %}?page=booking&doctor_id={{ doctor.id }}&date={{ selected_date }}&time={{ selected_time }}"class="confirm-btn">
-                Confirm Appointment</a>
-                {% else %}
-                <button class="confirm-btn disabled" disabled>
-                Select date & time first
-                </button>
-                {% endif %}
-
-
-
-               </div>
-
-               </div>
-             </div>
-
-            {% elif section == "booking" %}
-
-<div class="booking-wrapper">
-
-    <!-- BACK BUTTON -->
-    <a href="javascript:history.back()" class="back-link">← Back</a>
-
-    <h1 class="booking-title">Booking Form</h1>
-
-    <div class="booking-layout">
-
-        <!-- LEFT : CLIENT DETAILS -->
-        <div class="client-box">
-            <h3>Client Details</h3>
-
-            <p class="login-text">Input Your Details..!!</p>
-
-            <form method="post">
-                {% csrf_token %}
-
-                <div class="row">
-                    <input type="text" name="first_name" placeholder="First name *">
-                    <input type="text" name="last_name" placeholder="Last name *">
+                    <div class="calendar-grid">
+                        {% for week in month_days %}
+                            {% for day in week %}
+                                {% if day == 0 %}
+                                    <span class="empty"></span>
+                                {% else %}
+                                    {% with year|stringformat:"s" as y %}
+                                    {% with month|stringformat:"02d" as m %}
+                                    {% with day|stringformat:"02d" as d %}
+                                        {% with y|add:"-"|add:m|add:"-"|add:d as day_str %}
+                                            <a href="?page=schedule&doctor_id={{ doctor.id }}&date={{ day_str }}&month={{ month }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}"
+                                               class="day-btn {% if selected_date == day_str %}selected{% endif %}"
+                                               style="{% if selected_date == day_str %}background:#0284c7; color:#fff; font-weight:bold; box-shadow:0 2px 6px rgba(2,132,199,0.4);{% endif %}">
+                                                {{ day }}
+                                            </a>
+                                        {% endwith %}
+                                    {% endwith %}
+                                    {% endwith %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
 
-                <div class="row">
-                    <input type="email" name="email" placeholder="Email *">
-                    <input type="text" name="phone" placeholder="Phone">
-                </div>
-                <div class="row">
+                <!-- MIDDLE : TIME SLOTS -->
+                <div class="slot-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0;"><i class="fas fa-clock"></i> Select Time</h3>
+                        <span style="font-size:12px; color:#0d9488; font-weight:600; background:#ccfbf1; padding:3px 8px; border-radius:12px;">Step 2 of 2</span>
+                    </div>
+
+                    {% if selected_date %}
+                        <p style="font-size:12px; color:#555; margin-bottom:10px;">Showing slots for: <strong>{{ selected_date }}</strong></p>
+                    {% else %}
+                        <p style="font-size:12px; color:#d97706; margin-bottom:10px;">⚠️ Pick a date on the left first.</p>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ doctor.id }}">
+                        {% csrf_token %}
                         <input type="hidden" name="date" value="{{ selected_date }}">
-                        <input type="hidden" name="time" value="{{ selected_time }}">
-                        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+
+                        <div class="slots">
+                            {% for slot in time_slots %}
+                            <label class="slot" onclick="selectSlot('{{ slot }}')">
+                                <input type="radio" name="time" value="{{ slot }}" {% if slot == selected_time %}checked{% endif %} required>
+                                <span style="{% if slot == selected_time %}background:#0284c7; color:#fff; font-weight:bold;{% endif %}">{{ slot }}</span>
+                            </label>
+                            {% empty %}
+                            <p style="color:#777;">No slots available.</p>
+                            {% endfor %}
+                        </div>
+
+                        <button class="next-btn" type="submit" style="margin-top: 15px; background: #0284c7; cursor: pointer;">
+                            Confirm Slot &amp; Proceed →
+                        </button>
+                    </form>
                 </div>
 
-                <textarea placeholder="Add your message" name="text"></textarea>
-                 
+                <!-- RIGHT : SERVICE DETAILS -->
+                <div class="service-box">
+                    <h3>Appointment Details</h3>
+                    <p><strong>Doctor:</strong> Dr. {{ doctor.name }}</p>
+                    <p class="service"><strong>Specialty:</strong> {{ doctor.specialization }}</p>
+                    <p><strong>Selected Date:</strong> 
+                        {% if selected_date %}
+                            <span style="color:#0284c7; font-weight:bold;">{{ selected_date }}</span>
+                        {% else %}
+                            <span style="color:#ef4444;">Not selected</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Selected Time:</strong> 
+                        {% if selected_time %}
+                            <span style="color:#0284c7; font-weight:bold;">{{ selected_time }}</span>
+                        {% else %}
+                            <span style="color:#ef4444;">Not selected</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Consultation:</strong> 1 Hour Virtual/In-Clinic</p>
+                    <p><strong>Fee:</strong> ₹ 300.00</p>
+
+                    {% if selected_date and selected_time %}
+                    <a href="{% url 'patient_dashboard' %}?page=booking&doctor_id={{ doctor.id }}&date={{ selected_date }}&time={{ selected_time }}" class="confirm-btn" style="background:#0d9488; text-decoration:none; text-align:center; display:block;">
+                        Proceed to Booking →
+                    </a>
+                    {% else %}
+                    <button class="confirm-btn disabled" disabled style="background:#94a3b8; cursor:not-allowed;">
+                        Select date &amp; time first
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        <!-- RIGHT : BOOKING DETAILS -->
-        <div class="booking-details-box">
-            <h3>Booking Details</h3>
+        <script>
+        function selectSlot(slotVal) {
+            var selectedDate = "{{ selected_date }}";
+            if (!selectedDate) {
+                alert("Please select a date on the calendar first.");
+            }
+        }
+        </script>
 
-            <p class="service-name">
-                Consult with {{ doctor.name }}
-            </p>
+        {% elif section == "booking" %}
+        <div class="booking-wrapper">
+            <a href="{% url 'patient_dashboard' %}?page=schedule&doctor_id={{ doctor.id }}&date={{ selected_date }}&time={{ selected_time }}" class="back-link">← Back to Schedule</a>
+            <h1 class="booking-title">Confirm Appointment &amp; Payment</h1>
 
-            <p class="datetime">
-                {{ selected_date }} at {{ selected_time }}
-            </p>
+            <div class="booking-layout">
+                <!-- LEFT : CLIENT DETAILS -->
+                <div class="client-box">
+                    <h3>Patient Details</h3>
+                    <p class="login-text">Confirm your contact details for appointment updates &amp; reminders</p>
 
-            <p class="specialization">
-                {{ doctor.specialization }}
-            </p>
+                    <form method="post" id="booking-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <input type="text" id="first_name" name="first_name" placeholder="First name *" value="{{ patient.name }}" required>
+                            <input type="text" id="last_name" name="last_name" placeholder="Last name" value="">
+                        </div>
 
-            <p><strong>Duration:</strong> 1 Hour</p>
+                        <div class="row">
+                            <input type="email" id="email" name="email" placeholder="Email *" value="{{ patient.email }}" required>
+                            <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ patient.mobile }}">
+                        </div>
+                        <input type="hidden" id="selected_date" name="date" value="{{ selected_date }}">
+                        <input type="hidden" id="selected_time" name="time" value="{{ selected_time }}">
+                        <input type="hidden" id="doctor_id" name="doctor_id" value="{{ doctor.id }}">
 
-            <hr class="purple-line">
+                        <textarea id="booking_msg" placeholder="Describe symptoms or reasons for visit (optional)..." name="text"></textarea>
+                    </form>
+                </div>
 
-            <h4 style="color: black;">Payment Details</h4>
+                <!-- RIGHT : BOOKING DETAILS & PAYMENT METHODS -->
+                <div class="booking-details-box">
+                    <h3>Summary &amp; Payment</h3>
+                    <p class="service-name">Dr. {{ doctor.name }} ({{ doctor.specialization }})</p>
+                    <p class="datetime">📅 <strong>{{ selected_date }}</strong> at <strong>{{ selected_time }}</strong></p>
+                    <p><strong>Consultation Duration:</strong> 1 Hour</p>
 
-            <div class="payment-row">
-                <span style="color: black;">Payment for consult with {{ doctor.name }}</span>
-                <span style="color: black;">₹300</span>
+                    <hr class="purple-line">
+                    <h4>Fee Breakdown</h4>
+                    <div class="payment-row">
+                        <span>Consultation Charge</span>
+                        <span>₹300.00</span>
+                    </div>
+                    <div class="payment-row total">
+                        <strong>Total Amount</strong>
+                        <strong style="color: #0d9488;">₹300.00</strong>
+                    </div>
+
+                    <!-- PAYMENT OPTIONS TABS -->
+                    <div style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 10px; color:#1e293b;">Choose Payment Method:</h4>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button type="button" id="tab-upi-btn" onclick="switchPaymentMode('upi')" style="flex:1; padding:8px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; background:#0d9488; color:white; border:none;">
+                                📱 UPI ID (Test Mode)
+                            </button>
+                            <button type="button" id="tab-rzp-btn" onclick="switchPaymentMode('rzp')" style="flex:1; padding:8px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;">
+                                💳 Razorpay Gateway
+                            </button>
+                        </div>
+
+                        <!-- 1. UPI ID TEST MODE -->
+                        <div id="upi-payment-section" style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:15px;">
+                            <p style="margin:0 0 8px; font-size:13px; color:#166534; font-weight:600;">
+                                <i class="fas fa-check-circle"></i> Instant UPI Verification (Testing Mode)
+                            </p>
+                            <label style="display:block; font-size:12px; color:#374151; margin-bottom:4px;">Enter UPI ID:</label>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="upi_id_input" placeholder="e.g. user@okaxis, 9876543210@paytm" value="patient@upi" style="flex:1; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                                <button type="button" onclick="setSampleUpi('demo@okhdfcbank')" style="padding:4px 8px; font-size:11px; background:#e0f2fe; color:#0284c7; border:none; border-radius:4px; cursor:pointer;">Sample</button>
+                            </div>
+                            <small style="color:#166534; display:block; margin-top:5px;">Works in test mode without deducting real funds.</small>
+
+                            <button type="button" id="pay-upi-button" onclick="processUpiPayment()" class="book-btn" style="margin-top:14px; background:#16a34a; width:100%; border:none; padding:12px; border-radius:6px; color:white; font-weight:bold; font-size:14px; cursor:pointer;">
+                                ✅ Pay ₹300 via UPI &amp; Confirm
+                            </button>
+                        </div>
+
+                        <!-- 2. RAZORPAY SECTION -->
+                        <div id="rzp-payment-section" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:15px;">
+                            <p style="margin:0 0 10px; font-size:13px; color:#475569;">
+                                Pay securely using Cards, NetBanking, or Wallet via Razorpay sandbox.
+                            </p>
+                            <button type="button" id="rzp-button1" class="book-btn" style="background: #0284c7; width:100%; border:none; padding:12px; border-radius:6px; color:white; font-weight:bold; font-size:14px; cursor:pointer;">
+                                🚀 Launch Razorpay Gateway (₹300)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="payment-loading" style="display:none; margin-top:15px; text-align:center; color:#0284c7; font-weight:600;">
+                        <i class="fas fa-spinner fa-spin"></i> Processing and confirming appointment...
+                    </div>
+                </div>
             </div>
-
-            <div class="payment-row total">
-                <strong style="color: black;">Total</strong>
-                <strong style="color: black;">₹300</strong>
-            </div>
-
-            <p class="notify-text">
-                By completing your booking, you agree to receive
-                appointment notifications via email.
-            </p>
-
-            <button type="button" id="show-rzp"  class="book-btn">Pay & Confirm</button>
-
-            </form>
-
-            <div id="rzp-section" style="display:none;">
-           <button type="button" id="rzp-button1"  class="book-btn">
-            Pay with Razorpay
-           </button>
-         </div>
         </div>
+        {% endif %}
 
-    </div>
-</div>
-
-
-
-
-            {% endif %}
     </main>
-
 </div>
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Scripts for booking & payment -->
+{% if section == "booking" %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function switchPaymentMode(mode) {
+    var upiSec = document.getElementById("upi-payment-section");
+    var rzpSec = document.getElementById("rzp-payment-section");
+    var upiBtn = document.getElementById("tab-upi-btn");
+    var rzpBtn = document.getElementById("tab-rzp-btn");
 
-  <script>
+    if (mode === "upi") {
+        upiSec.style.display = "block";
+        rzpSec.style.display = "none";
+        upiBtn.style.background = "#0d9488";
+        upiBtn.style.color = "white";
+        rzpBtn.style.background = "#f1f5f9";
+        rzpBtn.style.color = "#475569";
+    } else {
+        upiSec.style.display = "none";
+        rzpSec.style.display = "block";
+        rzpBtn.style.background = "#0284c7";
+        rzpBtn.style.color = "white";
+        upiBtn.style.background = "#f1f5f9";
+        upiBtn.style.color = "#475569";
+    }
+}
 
-          
-      
-      document.getElementById("show-rzp").onclick = function(){
-    document.getElementById("rzp-section").style.display = "block";
-};
+function setSampleUpi(sample) {
+    document.getElementById("upi_id_input").value = sample;
+}
 
-var options = {
+function processUpiPayment() {
+    var upiId = document.getElementById("upi_id_input").value.trim();
+    if (!upiId || !upiId.includes("@")) {
+        alert("Please enter a valid UPI ID (e.g., username@okaxis, 9876543210@paytm)");
+        return;
+    }
+
+    var loading = document.getElementById("payment-loading");
+    var payBtn = document.getElementById("pay-upi-button");
+    loading.style.display = "block";
+    payBtn.disabled = true;
+
+    fetch("{% url 'payment_verify' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            upi_id: upiId,
+            doctor_id: "{{ doctor.id }}",
+            date: "{{ selected_date }}",
+            time: "{{ selected_time }}",
+            first_name: document.getElementById("first_name").value,
+            last_name: document.getElementById("last_name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            message: document.getElementById("booking_msg").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "success"){
+            window.location.href = data.redirect_url;
+        } else {
+            alert("Payment Failed: " + (data.message || data.error || "Please retry."));
+            loading.style.display = "none";
+            payBtn.disabled = false;
+        }
+    })
+    .catch(err => {
+        alert("Error booking appointment. Please check connection.");
+        loading.style.display = "none";
+        payBtn.disabled = false;
+    });
+}
+
+// Razorpay handler
+var rzpOptions = {
     "key": "{{ razorpay_key }}",
     "amount": "{{ amount }}",
     "currency": "INR",
     "name": "Medical Clinic",
-    "description": "Doctor Appointment",
+    "description": "Doctor Appointment Consultation",
     "order_id": "{{ order_id }}",
-
     "handler": function (response){
+        var loading = document.getElementById("payment-loading");
+        loading.style.display = "block";
 
         fetch("{% url 'payment_verify' %}", {
             method: "POST",
@@ -611,43 +801,47 @@ var options = {
                 doctor_id: "{{ doctor.id }}",
                 date: "{{ selected_date }}",
                 time: "{{ selected_time }}",
-                first_name: document.querySelector('[name="first_name"]').value,
-                last_name: document.querySelector('[name="last_name"]').value,
-                email: document.querySelector('[name="email"]').value,
-                phone: document.querySelector('[name="phone"]').value,
-                message: document.querySelector('[name="text"]').value
+                first_name: document.getElementById("first_name").value,
+                last_name: document.getElementById("last_name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                message: document.getElementById("booking_msg").value
             })
         })
         .then(res => res.json())
         .then(data => {
-            if(data.status == "success"){
+            if(data.status === "success"){
                 window.location.href = data.redirect_url;
             } else {
-                alert("Payment Failed");
+                alert("Payment Verification Failed: " + (data.message || "Please contact support"));
             }
+        })
+        .catch(err => {
+            alert("An error occurred while confirming your appointment.");
         });
     }
 };
 
-var rzp1 = new Razorpay(options);
-
-document.getElementById('rzp-button1').onclick = function(e){
-    rzp1.open();
-    e.preventDefault();
+var rzp1 = new Razorpay(rzpOptions);
+var rzpBtn = document.getElementById('rzp-button1');
+if (rzpBtn) {
+    rzpBtn.onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    };
 }
+</script>
+{% endif %}
 
-
-
-
-
-       
+<script>
     setTimeout(function () {
         const messages = document.getElementById("flash-messages");
         if (messages) {
             messages.style.opacity = "0";
-            setTimeout(() => messages.remove(), 500); // smooth fade
+            messages.style.transition = "opacity 0.5s ease";
+            setTimeout(() => messages.remove(), 500);
         }
-    }, 5000); // 5 seconds
+    }, 5000);
 </script>
 </body>
 </html>
