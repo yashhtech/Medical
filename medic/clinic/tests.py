@@ -300,3 +300,27 @@ class AccessControlAndSecurityTests(TestCase):
         self.assertEqual(dup_data["status"], "failed")
         self.assertIn("already have an appointment", dup_data["error"])
 
+    def test_past_date_and_time_booking_rejected(self):
+        session = self.client.session
+        session["patient_id"] = self.patient.id
+        session.save()
+
+        import json
+        # 1. Attempt booking for yesterday (past date)
+        past_payload = {
+            "doctor_id": self.doctor.id,
+            "date": "2020-01-01",
+            "time": "10:00 AM",
+            "upi_id": "testuser@okaxis",
+        }
+        response = self.client.post(
+            reverse("payment_verify"),
+            data=json.dumps(past_payload),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertEqual(data["status"], "failed")
+        self.assertIn("past", data["error"].lower())
+
+

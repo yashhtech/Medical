@@ -440,7 +440,9 @@ body::before {
 }
 
 .month-header strong {
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
 }
 
 /* WEEKDAYS */
@@ -489,6 +491,16 @@ body::before {
 .day-btn:hover {
     background: #d1c4e9;
     color: #4a148c;
+}
+
+/* DISABLED PAST DATE */
+.day-btn.disabled {
+    background: #f1f5f9;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+    border: 1px dashed #e2e8f0;
 }
 
 /* SELECTED */
@@ -554,6 +566,20 @@ body::before {
 .slot input:checked + span {
     background: #1976d2;
     color: #fff;
+}
+
+/* SLOT DISABLED */
+.slot.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.slot.disabled span {
+    background: #f1f5f9;
+    color: #94a3b8;
+    text-decoration: line-through;
+    border: 1px dashed #cbd5e1;
 }
 
 /* NEXT BUTTON */

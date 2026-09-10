@@ -2,7 +2,7 @@ import json
 import logging
 import calendar
 import uuid
-from datetime import date
+from datetime import date, datetime, time
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.contrib import messages
@@ -434,8 +434,43 @@ def patient_dashboard(request):
         cal = calendar.Calendar(calendar.SUNDAY)
         month_days = cal.monthdayscalendar(year, month)
 
-        selected_date = request.POST.get("date") or request.GET.get("date")
-        selected_time = request.POST.get("time") or request.GET.get("time")
+        # Normalize selected date and prevent selecting past dates
+        parsed_selected_date = None
+        if selected_date:
+            try:
+                parsed_selected_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
+                if parsed_selected_date < today:
+                    selected_date = None
+                    parsed_selected_date = None
+            except ValueError:
+                selected_date = None
+                parsed_selected_date = None
+
+        # Build list of time slots with passed status
+        now_time = datetime.now().time()
+        active_time_slots = []
+        for slot in time_slots:
+            is_passed = False
+            if parsed_selected_date and parsed_selected_date == today:
+                try:
+                    slot_t = datetime.strptime(slot, "%I:%M %p").time()
+                    if slot_t <= now_time:
+                        is_passed = True
+                except ValueError:
+                    pass
+            active_time_slots.append({
+                "time": slot,
+                "is_passed": is_passed,
+            })
+
+        # If selected_time itself is already passed for today, clear it
+        if selected_time and parsed_selected_date == today:
+            try:
+                sel_t = datetime.strptime(selected_time, "%I:%M %p").time()
+                if sel_t <= now_time:
+                    selected_time = None
+            except ValueError:
+                pass
 
         # If submitted via POST (Select Slot clicked) with both date and time, redirect cleanly to booking
         if request.method == "POST" and selected_date and selected_time:
@@ -443,17 +478,38 @@ def patient_dashboard(request):
                 f"{reverse('patient_dashboard')}?page=booking&doctor_id={doctor.id}&date={selected_date}&time={selected_time}"
             )
 
+        # Calculate previous and next month and year safely
+        if month == 1:
+            prev_month = 12
+            prev_year = year - 1
+        else:
+            prev_month = month - 1
+            prev_year = year
+
+        if month == 12:
+            next_month = 1
+            next_year = year + 1
+        else:
+            next_month = month + 1
+            next_year = year
+
         context.update({
             "section": "schedule",
             "doctor": doctor,
             "month": month,
             "year": year,
+            "prev_month": prev_month,
+            "prev_year": prev_year,
+            "next_month": next_month,
+            "next_year": next_year,
             "month_name": calendar.month_name[month],
             "month_days": month_days,
             "time_slots": time_slots,
+            "active_time_slots": active_time_slots,
             "selected_date": selected_date,
             "selected_time": selected_time,
             "today_str": today.strftime("%Y-%m-%d"),
+            "today_date": today,
         })
         return render(request, "dashboard/patient_dashboard.html", context)
 
@@ -462,6 +518,27 @@ def patient_dashboard(request):
         doctor = get_object_or_404(Doctor, id=doctor_id)
         selected_date = request.GET.get("date") or request.POST.get("date")
         selected_time = request.GET.get("time") or request.POST.get("time")
+
+        # Validate that appointment date and time have not passed
+        is_invalid_past = False
+        if not selected_date or not selected_time:
+            is_invalid_past = True
+        else:
+            try:
+                b_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
+                if b_date < today:
+                    is_invalid_past = True
+                elif b_date == today:
+                    b_time = datetime.strptime(selected_time, "%I:%M %p").time()
+                    if b_time <= datetime.now().time():
+                        is_invalid_past = True
+            except ValueError:
+                is_invalid_past = True
+
+        if is_invalid_past:
+            messages.error(request, "The selected appointment date or time has already passed. Please choose a future slot.")
+            return redirect(f"{reverse('patient_dashboard')}?page=schedule&doctor_id={doctor.id}")
+
         order_amount = 300 * 100  # in paise (300 INR)
         order_id = ""
 
@@ -690,6 +767,27 @@ def payment_verify(request):
 
         appt_date = data.get("date")
         appt_time = data.get("time")
+
+        if not appt_date or not appt_time:
+            return JsonResponse({"status": "failed", "error": "Appointment date and time are required."}, status=400)
+
+        # Validate that appointment date and time have not passed
+        try:
+            parsed_appt_date = datetime.strptime(appt_date, "%Y-%m-%d").date()
+            if parsed_appt_date < date.today():
+                return JsonResponse(
+                    {"status": "failed", "error": "Cannot book an appointment for a date in the past. Please select a valid future date."},
+                    status=400
+                )
+            elif parsed_appt_date == date.today():
+                parsed_appt_time = datetime.strptime(appt_time, "%I:%M %p").time()
+                if parsed_appt_time <= datetime.now().time():
+                    return JsonResponse(
+                        {"status": "failed", "error": "This appointment time slot has already passed for today. Please select an upcoming slot."},
+                        status=400
+                    )
+        except ValueError:
+            return JsonResponse({"status": "failed", "error": "Invalid date or time format provided."}, status=400)
 
         # Duplicate appointment prevention
         if Appointment.objects.filter(

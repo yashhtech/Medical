@@ -485,9 +485,9 @@
                     </div>
 
                     <div class="month-header">
-                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:-1 }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Previous Month">‹</a>
-                        <strong>{{ month_name }} {{ year }}</strong>
-                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ month|add:1 }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Next Month">›</a>
+                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ prev_month }}&year={{ prev_year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Previous Month">‹</a>
+                        <strong style="color:#0f172a; font-size:16px; font-weight:700; display:inline-block; padding:2px 8px;">{{ month_name }} {{ year }}</strong>
+                        <a href="?page=schedule&doctor_id={{ doctor.id }}&month={{ next_month }}&year={{ next_year }}{% if selected_time %}&time={{ selected_time }}{% endif %}" title="Next Month">›</a>
                     </div>
 
                     <div class="weekdays">
@@ -505,11 +505,18 @@
                                     {% with month|stringformat:"02d" as m %}
                                     {% with day|stringformat:"02d" as d %}
                                         {% with y|add:"-"|add:m|add:"-"|add:d as day_str %}
-                                            <a href="?page=schedule&doctor_id={{ doctor.id }}&date={{ day_str }}&month={{ month }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}"
-                                               class="day-btn {% if selected_date == day_str %}selected{% endif %}"
-                                               style="{% if selected_date == day_str %}background:#0284c7; color:#fff; font-weight:bold; box-shadow:0 2px 6px rgba(2,132,199,0.4);{% endif %}">
-                                                {{ day }}
-                                            </a>
+                                            {% if day_str < today_str %}
+                                                <!-- Past date is disabled -->
+                                                <span class="day-btn disabled" title="Cannot select past dates" style="background:#f1f5f9; color:#cbd5e1; cursor:not-allowed; opacity:0.5; border:1px dashed #e2e8f0;">
+                                                    {{ day }}
+                                                </span>
+                                            {% else %}
+                                                <a href="?page=schedule&doctor_id={{ doctor.id }}&date={{ day_str }}&month={{ month }}&year={{ year }}{% if selected_time %}&time={{ selected_time }}{% endif %}"
+                                                   class="day-btn {% if selected_date == day_str %}selected{% endif %}"
+                                                   style="{% if selected_date == day_str %}background:#0284c7; color:#fff; font-weight:bold; box-shadow:0 2px 6px rgba(2,132,199,0.4);{% endif %}">
+                                                    {{ day }}
+                                                </a>
+                                            {% endif %}
                                         {% endwith %}
                                     {% endwith %}
                                     {% endwith %}
@@ -538,11 +545,18 @@
                         <input type="hidden" name="date" value="{{ selected_date }}">
 
                         <div class="slots">
-                            {% for slot in time_slots %}
-                            <label class="slot" onclick="selectSlot('{{ slot }}')">
-                                <input type="radio" name="time" value="{{ slot }}" {% if slot == selected_time %}checked{% endif %} required>
-                                <span style="{% if slot == selected_time %}background:#0284c7; color:#fff; font-weight:bold;{% endif %}">{{ slot }}</span>
+                            {% for slot_data in active_time_slots %}
+                            {% if slot_data.is_passed %}
+                            <label class="slot disabled" title="This time slot has already passed for today">
+                                <input type="radio" name="time" value="{{ slot_data.time }}" disabled>
+                                <span style="background:#f1f5f9; color:#94a3b8; text-decoration:line-through; cursor:not-allowed;">{{ slot_data.time }}</span>
                             </label>
+                            {% else %}
+                            <label class="slot" onclick="selectSlot('{{ slot_data.time }}')">
+                                <input type="radio" name="time" value="{{ slot_data.time }}" {% if slot_data.time == selected_time %}checked{% endif %} required>
+                                <span style="{% if slot_data.time == selected_time %}background:#0284c7; color:#fff; font-weight:bold;{% endif %}">{{ slot_data.time }}</span>
+                            </label>
+                            {% endif %}
                             {% empty %}
                             <p style="color:#777;">No slots available.</p>
                             {% endfor %}
