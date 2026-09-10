@@ -234,6 +234,7 @@
                 {% endfor %}
             </div>
 
+            {% if chat_active %}
             <form method="POST" class="chat-input">
                 {% csrf_token %}
                 <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
@@ -246,6 +247,12 @@
                 <input type="hidden" name="appointment_id" value="{{ chat_appointment.id }}">
                 <button type="submit" name="end_chat" class="end-chat-btn"><i class="fas fa-times-circle"></i> End Chat</button>
             </form>
+            {% else %}
+            <div style="margin-top: 12px; padding: 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; text-align: center; color: #991b1b; font-size: 13px;">
+                <i class="fas fa-lock" style="margin-right: 6px;"></i>
+                <strong>Consultation Query Closed:</strong> This appointment has passed, ended, or was completed. Messaging is closed.
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         {% endif %}

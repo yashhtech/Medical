@@ -323,4 +323,30 @@ class AccessControlAndSecurityTests(TestCase):
         self.assertEqual(data["status"], "failed")
         self.assertIn("past", data["error"].lower())
 
+    def test_chat_blocked_for_past_or_completed_appointment(self):
+        # Create a past appointment
+        past_appt = Appointment.objects.create(
+            patient=self.patient,
+            doctor=self.doctor,
+            date="2020-05-10",
+            time="10:00 AM",
+            status="Confirmed",
+            is_paid=True,
+        )
+        self.assertFalse(past_appt.is_chat_active)
+
+        # Login as patient and try to send message to past appointment
+        session = self.client.session
+        session["patient_id"] = self.patient.id
+        session.save()
+
+        response = self.client.post(
+            f"/patient_dashboard/?page=chat&appointment_id={past_appt.id}",
+            data={"message": "Hello after appointment"}
+        )
+        # Should redirect back with error, message should NOT be created
+        from clinic.models import ChatMessage
+        self.assertEqual(ChatMessage.objects.filter(message="Hello after appointment").count(), 0)
+
+
 

@@ -350,7 +350,7 @@
         <div class="query-grid">
             {% for appt in appointments %}
             <div class="doctor-card">
-                <img src="{{ appt.doctor.get_image_url }}" alt="Doctor Profile">
+                <img src="{{ appt.doctor.get_image_url }}" alt="Doctor Profile" onerror="this.onerror=null; this.src='/static/images/default-doctor.svg';">
                 <h3>Dr. {{ appt.doctor.name }}</h3>
                 <p>{{ appt.doctor.specialization }}</p>
                 <p class="appt">📅 {{ appt.date }} | ⏰ {{ appt.time }}</p>
@@ -390,11 +390,18 @@
             </div>
 
             <!-- INPUT FORM -->
+            {% if chat_active %}
             <form method="POST" class="chat-input">
                 {% csrf_token %}
                 <input type="text" name="message" placeholder="Type your message..." required>
                 <button type="submit">Send</button>
             </form>
+            {% else %}
+            <div style="margin-top: 15px; padding: 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; text-align: center; color: #991b1b; font-size: 13px;">
+                <i class="fas fa-lock" style="margin-right: 6px;"></i>
+                <strong>Consultation Query Closed:</strong> This appointment has passed or consultation was completed. New messages cannot be sent.
+            </div>
+            {% endif %}
         </div>
 
         {% elif section == 'video' %}

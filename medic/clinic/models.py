@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from django.db import models
 
 
@@ -156,6 +157,41 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.patient} -> {self.doctor} ({self.date} {self.time})"
+
+    @property
+    def is_chat_active(self):
+        """
+        Chat is active ONLY for Confirmed appointments that have not yet passed or completed.
+        If status is Cancelled, Rejected, or Completed, chat is closed.
+        If the appointment date has passed, or if it was today and the time has passed, chat is closed.
+        """
+        if self.status != "Confirmed":
+            return False
+
+        today = date.today()
+        appt_date = self.date
+        if isinstance(appt_date, str):
+            try:
+                appt_date = datetime.strptime(appt_date, "%Y-%m-%d").date()
+            except ValueError:
+                return False
+
+        if appt_date < today:
+            return False
+
+        if appt_date == today:
+            try:
+                # Typical formats: "10:00 AM", "02:30 PM", "11:30 am"
+                slot_time = datetime.strptime(self.time.strip().upper(), "%I:%M %p").time()
+                # Allow consultation window (appointment time up to 1 hour after)
+                now_t = datetime.now().time()
+                if slot_time <= now_t:
+                    # After appointment time has passed for today, close consultation queries
+                    return False
+            except ValueError:
+                pass
+
+        return True
 
 
 class ChatThread(models.Model):

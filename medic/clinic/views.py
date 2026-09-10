@@ -164,18 +164,26 @@ def login(request):
     if "login_entry" not in request.session:
         request.session["login_entry"] = "/"
 
-    sample_patient = Patient.objects.order_by("id").first()
-    sample_doctor = Doctor.objects.order_by("id").first()
+    # Use verified test accounts from the database
+    verified_doctor = (
+        Doctor.objects.filter(email="aenawell54@gmail.com").first()
+        or Doctor.objects.filter(email="janvih56@gmail.com").first()
+        or Doctor.objects.first()
+    )
+    verified_patient = (
+        Patient.objects.filter(email="yash15778753x@gmail.com").first()
+        or Patient.objects.first()
+    )
 
     context = {
         "role": role,
         "login_entry": request.session.get("login_entry", "/"),
-        "sample_patient_email": sample_patient.email if sample_patient else "patient@demo.com",
+        "sample_patient_email": verified_patient.email if verified_patient else "yash15778753x@gmail.com",
         "sample_patient_password": "patient123",
-        "sample_doctor_email": sample_doctor.email if sample_doctor else "doctor@demo.com",
+        "sample_doctor_email": verified_doctor.email if verified_doctor else "aenawell54@gmail.com",
         "sample_doctor_password": "doctor123",
         "admin_email": getattr(settings, "ADMIN_EMAIL", "admin@gmail.com"),
-        "admin_password": getattr(settings, "ADMIN_PASSWORD", "password"),
+        "admin_password": getattr(settings, "ADMIN_PASSWORD", "admin@123"),
     }
     return render(request, "Nav-tab/login.html", context)
 
@@ -593,14 +601,16 @@ def patient_dashboard(request):
 
     # 7. Prescription Queries
     if page == "p_queries":
-        appointments = (
-            Appointment.objects.filter(patient=patient, status="Confirmed")
+        # Only show active consultations that have not passed or completed
+        all_confirmed = (
+            Appointment.objects.filter(patient=patient, status="Confirmed", date__gte=today)
             .select_related("doctor")
-            .order_by("-date")
+            .order_by("date", "time")
         )
+        active_appts = [a for a in all_confirmed if a.is_chat_active]
         context.update({
             "section": "p_queries",
-            "appointments": appointments,
+            "appointments": active_appts,
         })
         return render(request, "dashboard/patient_dashboard.html", context)
 
@@ -611,7 +621,14 @@ def patient_dashboard(request):
         )
         thread, _ = ChatThread.objects.get_or_create(appointment=appointment)
 
+        # Check if chat is still active for this appointment
+        chat_active = appointment.is_chat_active and thread.is_active
+
         if request.method == "POST":
+            if not chat_active:
+                messages.error(request, "This consultation chat has ended or the appointment has passed. No further messages can be sent.")
+                return redirect(f"/patient_dashboard/?page=chat&appointment_id={appointment.id}")
+
             text = request.POST.get("message", "").strip()
             if text:
                 ChatMessage.objects.create(
@@ -633,6 +650,7 @@ def patient_dashboard(request):
             "appointment": appointment,
             "doctor": appointment.doctor,
             "chat_messages": thread.messages.all(),
+            "chat_active": chat_active,
         })
         return render(request, "dashboard/patient_dashboard.html", context)
 
@@ -1069,6 +1087,10 @@ def doctor_dashboard(request):
         appointment = get_object_or_404(Appointment, id=appointment_id, doctor=doctor)
 
         thread, _ = ChatThread.objects.get_or_create(appointment=appointment)
+        if not (appointment.is_chat_active and thread.is_active):
+            messages.error(request, "This consultation has closed or the appointment date has passed. Chat is disabled.")
+            return redirect(f"{reverse('doctor_dashboard')}?page=prescriptions&open_chat_id={appointment.id}")
+
         if text:
             ChatMessage.objects.create(thread=thread, sender="doctor", message=text)
             Notification.objects.create(
@@ -1110,10 +1132,12 @@ def doctor_dashboard(request):
 
     chat_appointment = None
     chat_messages = []
+    chat_active = False
     if open_chat_id and open_chat_id.isdigit():
         chat_appointment = get_object_or_404(Appointment, id=int(open_chat_id), doctor=doctor)
         thread, _ = ChatThread.objects.get_or_create(appointment=chat_appointment)
         chat_messages = thread.messages.all().order_by("created_at")
+        chat_active = chat_appointment.is_chat_active and thread.is_active
 
     context = {
         "doctor": doctor,
@@ -1122,6 +1146,7 @@ def doctor_dashboard(request):
         "open_chat_id": int(open_chat_id) if open_chat_id and open_chat_id.isdigit() else None,
         "chat_appointment": chat_appointment,
         "chat_messages": chat_messages,
+        "chat_active": chat_active,
         "doctor_notifications": doctor_notifications,
         "unread_notifications_count": unread_notifications_count,
     }
