@@ -348,5 +348,32 @@ class AccessControlAndSecurityTests(TestCase):
         from clinic.models import ChatMessage
         self.assertEqual(ChatMessage.objects.filter(message="Hello after appointment").count(), 0)
 
+    def test_schedule_page_loads_without_error(self):
+        # Patient visits doctor schedule page
+        session = self.client.session
+        session["patient_id"] = self.patient.id
+        session.save()
+
+        response = self.client.get(
+            f"/patient_dashboard/?page=schedule&doctor_id={self.doctor.id}"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.doctor.name)
+        self.assertContains(response, "Select Date")
+
+    def test_schedule_page_post_redirects_to_booking(self):
+        session = self.client.session
+        session["patient_id"] = self.patient.id
+        session.save()
+
+        response = self.client.post(
+            f"/patient_dashboard/?page=schedule&doctor_id={self.doctor.id}",
+            data={"date": "2026-12-01", "time": "10:00 AM"}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("page=booking", response.url)
+        self.assertIn("date=2026-12-01", response.url)
+
+
 
 

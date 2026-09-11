@@ -337,6 +337,8 @@ def patient_dashboard(request):
 
     doctor_id_raw = request.GET.get("doctor_id")
     doctor_id = int(doctor_id_raw) if doctor_id_raw and doctor_id_raw.isdigit() else None
+    selected_date = request.GET.get("date") or request.POST.get("date")
+    selected_time = request.GET.get("time") or request.POST.get("time")
 
     today = date.today()
     time_slots = [
@@ -426,8 +428,11 @@ def patient_dashboard(request):
         return render(request, "dashboard/patient_dashboard.html", context)
 
     # 4. Schedule Slot Selection
-    # 4. Schedule Slot Selection
-    if page == "schedule" and doctor_id:
+    if page == "schedule":
+        if not doctor_id:
+            messages.warning(request, "Please select a doctor to schedule an appointment.")
+            return redirect(f"{reverse('patient_dashboard')}?page=book")
+
         doctor = get_object_or_404(Doctor, id=doctor_id)
         month = int(request.GET.get("month", today.month))
         year = int(request.GET.get("year", today.year))
@@ -480,11 +485,14 @@ def patient_dashboard(request):
             except ValueError:
                 pass
 
-        # If submitted via POST (Select Slot clicked) with both date and time, redirect cleanly to booking
-        if request.method == "POST" and selected_date and selected_time:
-            return redirect(
-                f"{reverse('patient_dashboard')}?page=booking&doctor_id={doctor.id}&date={selected_date}&time={selected_time}"
-            )
+        # If submitted via POST (Select Slot clicked), ensure date & time are picked before redirecting to booking
+        if request.method == "POST":
+            if not selected_date or not selected_time:
+                messages.warning(request, "Please select both a date and a time slot before proceeding.")
+            else:
+                return redirect(
+                    f"{reverse('patient_dashboard')}?page=booking&doctor_id={doctor.id}&date={selected_date}&time={selected_time}"
+                )
 
         # Calculate previous and next month and year safely
         if month == 1:
@@ -522,7 +530,11 @@ def patient_dashboard(request):
         return render(request, "dashboard/patient_dashboard.html", context)
 
     # 5. Booking & Payment Page
-    if page == "booking" and doctor_id:
+    if page == "booking":
+        if not doctor_id:
+            messages.warning(request, "Please select a doctor to book an appointment.")
+            return redirect(f"{reverse('patient_dashboard')}?page=book")
+
         doctor = get_object_or_404(Doctor, id=doctor_id)
         selected_date = request.GET.get("date") or request.POST.get("date")
         selected_time = request.GET.get("time") or request.POST.get("time")
